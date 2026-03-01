@@ -6,6 +6,7 @@ A .NET 10 AOT-enabled Web API for church management.
 
 - **ChurchApp.API** - Web API project with FastEndpoints
 - **ChurchApp.Application** - Application layer with business logic
+- **ChurchApp.Web** - Volunteer desk UI (React + Vite + TypeScript + TailwindCSS)
 
 ## Technology Stack
 
@@ -19,6 +20,12 @@ A .NET 10 AOT-enabled Web API for church management.
 - **FastEndpoints 5.35.0** - High-performance endpoint routing
 - **ErrorOr 2.0.1** - Functional error handling
 - **Microsoft.Extensions.DependencyInjection 10.0.1** - Dependency injection
+
+### Frontend Stack
+- **React 19 + Vite 7 + TypeScript**
+- **TailwindCSS**
+- **Google Fonts** (`Inter`, `Noto Sans`, `Noto Color Emoji`)
+- **Blue theme** optimized for simple volunteer workflows
 
 ## Configuration Files
 
@@ -66,6 +73,13 @@ dotnet test -p:WarningsNotAsErrors=NU1507
 ```
 
 > Integration tests start real Docker containers (PostgreSQL and Aspire-orchestrated resources), so Docker must be running.
+
+### Run Web UI
+```bash
+cd ChurchApp.Web
+npm install
+npm run dev
+```
 
 ### Publish AOT
 ```bash

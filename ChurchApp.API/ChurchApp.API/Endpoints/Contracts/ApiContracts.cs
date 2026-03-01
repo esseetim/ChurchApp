@@ -87,3 +87,36 @@ public sealed record TimeRangeReportResponse(
     decimal TotalAmount,
     int DonationCount,
     List<DonationTypeBreakdownDto> Breakdown);
+
+public sealed record GetMembersRequest(string? Search = null, int Page = 1, int PageSize = 50);
+
+public sealed record CreateMemberRequest(
+    string FirstName,
+    string LastName,
+    string? Email = null,
+    string? PhoneNumber = null);
+
+public sealed record CreateMemberResponse(Guid MemberId);
+
+public sealed record MemberListItemDto(
+    Guid Id,
+    string FirstName,
+    string LastName,
+    string? Email,
+    string? PhoneNumber);
+
+public sealed record MembersResponse(int Page, int PageSize, int TotalCount, List<MemberListItemDto> Members);
+
+public sealed record GetFamiliesRequest(string? Search = null, int Page = 1, int PageSize = 50);
+
+public sealed record CreateFamilyRequest(string Name);
+
+public sealed record CreateFamilyResponse(Guid FamilyId);
+
+public sealed record FamilyListItemDto(Guid Id, string Name, int MemberCount);
+
+public sealed record FamiliesResponse(int Page, int PageSize, int TotalCount, List<FamilyListItemDto> Families);
+
+public sealed record AddFamilyMemberRequest(Guid MemberId);
+
+public sealed record AddFamilyMemberResponse(Guid FamilyId, Guid MemberId, bool Added);
