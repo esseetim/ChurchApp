@@ -1,6 +1,7 @@
 using System.Text.Json;
 using ChurchApp.API;
 using ChurchApp.API.Endpoints.Contracts;
+using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Reports;
 using ChurchApp.Application.Infrastructure;
 using FastEndpoints;
@@ -20,7 +21,9 @@ public sealed class GetTimeRangeReportEndpoint(ChurchAppDbContext dbContext)
     public override async Task HandleAsync(TimeRangeReportRequest req, CancellationToken ct)
     {
         var donations = dbContext.Donations
-            .Where(x => x.DonationDate >= req.StartDate && x.DonationDate <= req.EndDate);
+            .Where(x => x.Status == DonationStatus.Active
+                        && x.DonationDate >= req.StartDate
+                        && x.DonationDate <= req.EndDate);
 
         var totalAmount = await donations.SumAsync(x => x.Amount, ct);
         var donationCount = await donations.CountAsync(ct);

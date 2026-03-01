@@ -16,5 +16,14 @@ public sealed class DomainEventDispatcher(IServiceProvider serviceProvider) : ID
                 await handler.HandleAsync(donationCreatedDomainEvent, cancellationToken);
             }
         }
+
+        if (domainEvent is DonationVoidedDomainEvent donationVoidedDomainEvent)
+        {
+            var handlers = serviceProvider.GetServices<IDomainEventHandler<DonationVoidedDomainEvent>>();
+            foreach (var handler in handlers)
+            {
+                await handler.HandleAsync(donationVoidedDomainEvent, cancellationToken);
+            }
+        }
     }
 }

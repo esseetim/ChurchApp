@@ -53,6 +53,20 @@ public sealed class CreateDonationEndpoint(ChurchAppDbContext dbContext, IUnitOf
             }
         }
 
+        if (!string.IsNullOrWhiteSpace(req.IdempotencyKey))
+        {
+            var existingDonation = await dbContext.Donations
+                .Where(x => x.IdempotencyKey == req.IdempotencyKey.Trim())
+                .Select(x => new { x.Id, x.Version })
+                .SingleOrDefaultAsync(ct);
+
+            if (existingDonation is not null)
+            {
+                await SendAsync(new CreateDonationResponse(existingDonation.Id, existingDonation.Version, true), 200, ct);
+                return;
+            }
+        }
+
         var donation = Donation.Create(
             req.MemberId,
             req.DonationAccountId,
@@ -60,15 +74,27 @@ public sealed class CreateDonationEndpoint(ChurchAppDbContext dbContext, IUnitOf
             req.Method,
             req.DonationDate,
             req.Amount,
+            req.IdempotencyKey,
+            req.EnteredBy,
             req.ServiceName,
             req.Notes);
 
         await unitOfWork.ExecuteInTransactionAsync(async txCt =>
         {
             dbContext.Donations.Add(donation);
+            dbContext.DonationAudits.Add(new DonationAudit
+            {
+                Id = Guid.NewGuid(),
+                DonationId = donation.Id,
+                Action = DonationAuditAction.Created,
+                OccurredAtUtc = DateTime.UtcNow,
+                PerformedBy = string.IsNullOrWhiteSpace(req.EnteredBy) ? "system" : req.EnteredBy.Trim(),
+                SnapshotJson = $"{{\"donationId\":\"{donation.Id}\",\"memberId\":\"{donation.MemberId}\",\"amount\":{donation.Amount},\"status\":\"{donation.Status}\",\"version\":{donation.Version}}}"
+            });
+
             await unitOfWork.SaveChangesAsync(txCt);
         }, ct);
 
-        await SendAsync(new CreateDonationResponse(donation.Id), 201, ct);
+        await SendAsync(new CreateDonationResponse(donation.Id, donation.Version, false), 201, ct);
     }
 }

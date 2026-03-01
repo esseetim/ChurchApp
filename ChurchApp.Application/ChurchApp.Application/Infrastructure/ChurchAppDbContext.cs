@@ -20,6 +20,7 @@ public sealed class ChurchAppDbContext(DbContextOptions<ChurchAppDbContext> opti
     public DbSet<FamilyMember> FamilyMembers => Set<FamilyMember>();
     public DbSet<DonationAccount> DonationAccounts => Set<DonationAccount>();
     public DbSet<Donation> Donations => Set<Donation>();
+    public DbSet<DonationAudit> DonationAudits => Set<DonationAudit>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<Summary> Summaries => Set<Summary>();
 
@@ -30,6 +31,7 @@ public sealed class ChurchAppDbContext(DbContextOptions<ChurchAppDbContext> opti
         modelBuilder.ApplyConfiguration(new FamilyMemberConfiguration());
         modelBuilder.ApplyConfiguration(new DonationAccountConfiguration());
         modelBuilder.ApplyConfiguration(new DonationConfiguration());
+        modelBuilder.ApplyConfiguration(new DonationAuditConfiguration());
         modelBuilder.ApplyConfiguration(new ReportConfiguration());
         modelBuilder.ApplyConfiguration(new SummaryConfiguration());
 

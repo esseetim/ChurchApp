@@ -11,9 +11,15 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Type).HasConversion<int>();
         builder.Property(x => x.Method).HasConversion<int>();
+        builder.Property(x => x.Status).HasConversion<int>().HasDefaultValue((int)DonationStatus.Active);
         builder.Property(x => x.Amount).HasPrecision(18, 2);
+        builder.Property(x => x.IdempotencyKey).HasMaxLength(100);
         builder.Property(x => x.ServiceName).HasMaxLength(200);
         builder.Property(x => x.Notes).HasMaxLength(1000);
+        builder.Property(x => x.CreatedBy).HasMaxLength(120).IsRequired();
+        builder.Property(x => x.VoidedBy).HasMaxLength(120);
+        builder.Property(x => x.VoidReason).HasMaxLength(500);
+        builder.Property(x => x.Version).IsConcurrencyToken();
         builder.ToTable(t => t.HasCheckConstraint("CK_Donations_Amount_NotZero", "\"Amount\" <> 0"));
 
         builder.HasOne(x => x.Member)
@@ -27,5 +33,6 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasIndex(x => new { x.DonationDate, x.Type });
+        builder.HasIndex(x => x.IdempotencyKey).IsUnique();
     }
 }

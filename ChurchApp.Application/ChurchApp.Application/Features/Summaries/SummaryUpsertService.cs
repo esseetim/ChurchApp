@@ -9,21 +9,50 @@ public sealed class SummaryUpsertService(ChurchAppDbContext dbContext) : ISummar
 {
     public async Task UpsertForDonationAsync(DonationCreatedDomainEvent donationEvent, CancellationToken cancellationToken)
     {
-        var normalizedServiceName = string.IsNullOrWhiteSpace(donationEvent.ServiceName)
+        await ApplyDonationDeltaAsync(
+            donationEvent.MemberId,
+            donationEvent.DonationDate,
+            donationEvent.Amount,
+            1,
+            donationEvent.ServiceName,
+            cancellationToken);
+    }
+
+    public async Task AdjustForVoidedDonationAsync(DonationVoidedDomainEvent donationEvent, CancellationToken cancellationToken)
+    {
+        await ApplyDonationDeltaAsync(
+            donationEvent.MemberId,
+            donationEvent.DonationDate,
+            -donationEvent.Amount,
+            -1,
+            donationEvent.ServiceName,
+            cancellationToken);
+    }
+
+    private async Task ApplyDonationDeltaAsync(
+        Guid memberId,
+        DateOnly donationDate,
+        decimal amountDelta,
+        int countDelta,
+        string? serviceName,
+        CancellationToken cancellationToken)
+    {
+        var normalizedServiceName = string.IsNullOrWhiteSpace(serviceName)
             ? null
-            : donationEvent.ServiceName.Trim();
+            : serviceName.Trim();
 
         if (normalizedServiceName is not null)
         {
             await UpsertSummaryAsync(
                 SummaryType.Service,
                 SummaryPeriodType.Day,
-                donationEvent.DonationDate,
-                donationEvent.DonationDate,
+                donationDate,
+                donationDate,
                 null,
                 null,
                 normalizedServiceName,
-                donationEvent.Amount,
+                amountDelta,
+                countDelta,
                 cancellationToken);
         }
 
@@ -35,22 +64,23 @@ public sealed class SummaryUpsertService(ChurchAppDbContext dbContext) : ISummar
                      SummaryPeriodType.Year
                  })
         {
-            var (startDate, endDate) = GetPeriodRange(period, donationEvent.DonationDate);
+            var (startDate, endDate) = GetPeriodRange(period, donationDate);
 
             await UpsertSummaryAsync(
                 SummaryType.Member,
                 period,
                 startDate,
                 endDate,
-                donationEvent.MemberId,
+                memberId,
                 null,
                 null,
-                donationEvent.Amount,
+                amountDelta,
+                countDelta,
                 cancellationToken);
         }
 
         var familyIds = await dbContext.FamilyMembers
-            .Where(x => x.MemberId == donationEvent.MemberId)
+            .Where(x => x.MemberId == memberId)
             .Select(x => x.FamilyId)
             .ToListAsync(cancellationToken);
 
@@ -64,7 +94,7 @@ public sealed class SummaryUpsertService(ChurchAppDbContext dbContext) : ISummar
                          SummaryPeriodType.Year
                      })
             {
-                var (startDate, endDate) = GetPeriodRange(period, donationEvent.DonationDate);
+                var (startDate, endDate) = GetPeriodRange(period, donationDate);
 
                 await UpsertSummaryAsync(
                     SummaryType.Family,
@@ -74,7 +104,8 @@ public sealed class SummaryUpsertService(ChurchAppDbContext dbContext) : ISummar
                     null,
                     familyId,
                     null,
-                    donationEvent.Amount,
+                    amountDelta,
+                    countDelta,
                     cancellationToken);
             }
         }
@@ -88,7 +119,8 @@ public sealed class SummaryUpsertService(ChurchAppDbContext dbContext) : ISummar
         Guid? memberId,
         Guid? familyId,
         string? serviceName,
-        decimal amount,
+        decimal amountDelta,
+        int countDelta,
         CancellationToken cancellationToken)
     {
         var summary = await dbContext.Summaries.SingleOrDefaultAsync(
@@ -105,7 +137,7 @@ public sealed class SummaryUpsertService(ChurchAppDbContext dbContext) : ISummar
         {
             summary = new Summary
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.CreateVersion7(),
                 Type = type,
                 PeriodType = periodType,
                 StartDate = startDate,
@@ -122,8 +154,18 @@ public sealed class SummaryUpsertService(ChurchAppDbContext dbContext) : ISummar
             dbContext.Summaries.Add(summary);
         }
 
-        summary.TotalAmount += amount;
-        summary.DonationCount += 1;
+        summary.TotalAmount += amountDelta;
+        summary.DonationCount += countDelta;
+        if (summary.DonationCount < 0)
+        {
+            summary.DonationCount = 0;
+        }
+
+        if (summary.TotalAmount < 0)
+        {
+            summary.TotalAmount = 0;
+        }
+
         summary.GeneratedAtUtc = DateTime.UtcNow;
     }
 

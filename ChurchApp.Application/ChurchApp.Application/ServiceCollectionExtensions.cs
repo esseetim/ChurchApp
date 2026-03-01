@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<ISummaryUpsertService, SummaryUpsertService>();
         services.AddScoped<IDomainEventHandler<DonationCreatedDomainEvent>, DonationCreatedDomainEventHandler>();
+        services.AddScoped<IDomainEventHandler<DonationVoidedDomainEvent>, DonationVoidedDomainEventHandler>();
 
         return services;
     }
