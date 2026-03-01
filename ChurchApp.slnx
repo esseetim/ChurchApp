@@ -8,6 +8,9 @@
   <Folder Name="/Scripts/">
     <File Path="test-app.sh" />
     <File Path="verify-setup.sh" />
+    <File Path="build-api.sh" />
+    <File Path="run-api.sh" />
+    <File Path="ensure-ef-compiled-model.sh" />
   </Folder>
   <Folder Name="/Documentation/">
     <File Path="README.md" />

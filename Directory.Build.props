@@ -10,23 +10,34 @@
         <ImplicitUsings>enable</ImplicitUsings>
         
         <!-- AOT Configuration -->
-        <PublishAot>true</PublishAot>
+        <PublishAot>false</PublishAot>
         <InvariantGlobalization>true</InvariantGlobalization>
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
         
         <!-- Performance and Trimming -->
-        <PublishTrimmed>true</PublishTrimmed>
+        <PublishTrimmed>false</PublishTrimmed>
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
         <EnableAotAnalyzer>true</EnableAotAnalyzer>
         <IsAotCompatible>true</IsAotCompatible>
         
         <!-- Code Quality -->
-        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         
         <!-- Central Package Management -->
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(MSBuildProjectName)' == 'ChurchApp.Application'">
+        <IsAotCompatible>false</IsAotCompatible>
+        <EnableAotAnalyzer>false</EnableAotAnalyzer>
+        <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <PublishAot>true</PublishAot>
+        <PublishTrimmed>true</PublishTrimmed>
     </PropertyGroup>
 
 </Project>

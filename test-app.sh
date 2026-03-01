@@ -1,11 +1,17 @@
 #!/bin/zsh
 
+set -euo pipefail
+
 # Test script for ChurchApp API
 echo "🧪 Testing ChurchApp API Setup"
 echo "==============================="
 echo ""
 
-cd /Users/esseabasietim/Dev/ChurchApp
+SCRIPT_DIR="${0:A:h}"
+cd "$SCRIPT_DIR"
+
+# Ensure compiled model is generated before any build/run step
+./ensure-ef-compiled-model.sh
 
 # Clean and build
 echo "🧹 Cleaning solution..."
@@ -14,12 +20,12 @@ echo "✅ Clean complete"
 echo ""
 
 echo "📦 Restoring packages..."
-dotnet restore --verbosity quiet
+dotnet restore --source https://api.nuget.org/v3/index.json --verbosity quiet
 echo "✅ Restore complete"
 echo ""
 
 echo "🔨 Building solution..."
-BUILD_OUTPUT=$(dotnet build --verbosity normal 2>&1)
+BUILD_OUTPUT=$(dotnet build --no-restore --verbosity normal 2>&1)
 BUILD_EXIT=$?
 
 if [ $BUILD_EXIT -eq 0 ]; then

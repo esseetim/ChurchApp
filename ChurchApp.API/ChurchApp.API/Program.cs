@@ -17,7 +17,7 @@ public static class Program
         });
         
         // Add Application services
-        builder.Services.AddChurchAppServices();
+        builder.Services.AddChurchAppServices(builder.Configuration);
         
         // Add FastEndpoints
         builder.Services.AddFastEndpoints();

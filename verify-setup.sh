@@ -15,7 +15,7 @@ echo ""
 
 # Restore packages
 echo "📦 Restoring NuGet packages..."
-if dotnet restore > /dev/null 2>&1; then
+if dotnet restore --source https://api.nuget.org/v3/index.json > /dev/null 2>&1; then
     echo "   ✅ Package restore successful"
 else
     echo "   ❌ Package restore failed"

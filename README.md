@@ -45,13 +45,12 @@ Central package version management:
 ### Build the Solution
 ```bash
 dotnet restore
-dotnet build
+./build-api.sh
 ```
 
 ### Run the API
 ```bash
-cd ChurchApp.API/ChurchApp.API
-dotnet run
+./run-api.sh
 ```
 
 ### Publish AOT
@@ -67,6 +66,23 @@ This project is configured for Native AOT compilation, which means:
 - No JIT compilation required at runtime
 - Some reflection-based features are limited
 - JSON serialization requires source generation
+
+## EF Core Trimming Guidance
+
+EF Core has limited trimming/NativeAOT compatibility. This project uses a compiled model generation step to align with EF guidance.
+
+Before build/run, use:
+
+```bash
+./ensure-ef-compiled-model.sh
+```
+
+Or use the enforced wrappers:
+
+```bash
+./build-api.sh
+./run-api.sh
+```
 
 ## Database
 
