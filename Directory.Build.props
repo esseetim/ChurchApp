@@ -1,0 +1,33 @@
+<Project>
+
+    <PropertyGroup>
+        <!-- Target Framework -->
+        <TargetFramework>net10.0</TargetFramework>
+        
+        <!-- Language Features -->
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        
+        <!-- AOT Configuration -->
+        <PublishAot>true</PublishAot>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+        
+        <!-- Performance and Trimming -->
+        <PublishTrimmed>true</PublishTrimmed>
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
+        <EnableAotAnalyzer>true</EnableAotAnalyzer>
+        <IsAotCompatible>true</IsAotCompatible>
+        
+        <!-- Code Quality -->
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        
+        <!-- Central Package Management -->
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+
+</Project>
+

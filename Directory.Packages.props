@@ -1,0 +1,37 @@
+<Project>
+    
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+        <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- ASP.NET Core -->
+        <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+        
+        <!-- Entity Framework Core with SQLite -->
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.1" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageVersion>
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageVersion>
+        
+        <!-- Dependency Injection -->
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
+        
+        <!-- FastEndpoints -->
+        <PackageVersion Include="FastEndpoints" Version="5.35.0" />
+        <PackageVersion Include="FastEndpoints.Swagger" Version="5.35.0" />
+        
+        <!-- ErrorOr -->
+        <PackageVersion Include="ErrorOr" Version="2.0.1" />
+    </ItemGroup>
+
+</Project>
+
