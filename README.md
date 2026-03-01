@@ -53,6 +53,18 @@ dotnet restore
 ./run-api.sh
 ```
 
+### Run with Aspire AppHost (API + SQLite container orchestration)
+```bash
+./run-apphost.sh
+```
+
+> Docker daemon must be running for AppHost orchestration.
+
+### Run tests (unit + integration)
+```bash
+dotnet test -p:WarningsNotAsErrors=NU1507
+```
+
 ### Publish AOT
 ```bash
 dotnet publish -c Release
@@ -69,20 +81,7 @@ This project is configured for Native AOT compilation, which means:
 
 ## EF Core Trimming Guidance
 
-EF Core has limited trimming/NativeAOT compatibility. This project uses a compiled model generation step to align with EF guidance.
-
-Before build/run, use:
-
-```bash
-./ensure-ef-compiled-model.sh
-```
-
-Or use the enforced wrappers:
-
-```bash
-./build-api.sh
-./run-api.sh
-```
+EF Core has limited trimming/NativeAOT compatibility. This project keeps runtime behavior predictable by using explicit model configuration and integration tests for endpoint/data workflows.
 
 ## Database
 
@@ -109,4 +108,3 @@ dotnet ef database update --project ChurchApp.API/ChurchApp.API
 - InvariantGlobalization is enabled for smaller binary size
 - JSON serialization does not use reflection by default
 - Enable trim analyzers to catch AOT compatibility issues early
-

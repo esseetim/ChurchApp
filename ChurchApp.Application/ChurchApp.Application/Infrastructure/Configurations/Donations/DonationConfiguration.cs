@@ -11,7 +11,7 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Type).HasConversion<int>();
         builder.Property(x => x.Method).HasConversion<int>();
-        builder.Property(x => x.Status).HasConversion<int>().HasDefaultValue((int)DonationStatus.Active);
+        builder.Property(x => x.Status).HasConversion<int>().HasDefaultValue(DonationStatus.Active);
         builder.Property(x => x.Amount).HasPrecision(18, 2);
         builder.Property(x => x.IdempotencyKey).HasMaxLength(100);
         builder.Property(x => x.ServiceName).HasMaxLength(200);

@@ -10,9 +10,6 @@ echo ""
 SCRIPT_DIR="${0:A:h}"
 cd "$SCRIPT_DIR"
 
-# Ensure compiled model is generated before any build/run step
-./ensure-ef-compiled-model.sh
-
 # Clean and build
 echo "🧹 Cleaning solution..."
 dotnet clean --verbosity quiet
@@ -80,4 +77,3 @@ else
     echo "❌ Build failed!"
     echo "$BUILD_OUTPUT"
 fi
-

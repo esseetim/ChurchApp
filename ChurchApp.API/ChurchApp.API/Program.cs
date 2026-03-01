@@ -4,11 +4,12 @@ using ChurchApp.Application;
 
 namespace ChurchApp.API;
 
-public static class Program
+public class Program
 {
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateSlimBuilder(args);
+        builder.AddServiceDefaults();
         
         // Configure JSON serialization for AOT
         builder.Services.ConfigureHttpJsonOptions(options =>
@@ -36,6 +37,7 @@ public static class Program
         
         // Configure middleware pipeline
         app.UseFastEndpoints();
+        app.MapDefaultEndpoints();
         
         // Enable Swagger in development
         if (app.Environment.IsDevelopment())

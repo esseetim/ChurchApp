@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using ChurchApp.API.Endpoints;
 using ChurchApp.API.Endpoints.Contracts;
+using FastEndpoints;
 
 namespace ChurchApp.API;
 
@@ -13,6 +14,7 @@ namespace ChurchApp.API;
 [JsonSerializable(typeof(bool))]
 [JsonSerializable(typeof(Dictionary<string, object>))]
 [JsonSerializable(typeof(List<string>))]
+[JsonSerializable(typeof(ErrorResponse))]
 [JsonSerializable(typeof(HealthResponse))]
 [JsonSerializable(typeof(CreateDonationRequest))]
 [JsonSerializable(typeof(CreateDonationResponse))]
