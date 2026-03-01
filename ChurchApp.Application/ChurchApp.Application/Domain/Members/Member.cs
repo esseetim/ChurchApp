@@ -11,7 +11,7 @@ public class Member
     public string? Email { get; set; }
     public string? PhoneNumber { get; set; }
 
-    public ICollection<FamilyMember> FamilyMembers { get; set; } = new List<FamilyMember>();
-    public ICollection<DonationAccount> DonationAccounts { get; set; } = new List<DonationAccount>();
-    public ICollection<Donation> Donations { get; set; } = new List<Donation>();
+    public ICollection<FamilyMember> FamilyMembers { get; set; } = [];
+    public ICollection<DonationAccount> DonationAccounts { get; set; } = [];
+    public ICollection<Donation> Donations { get; set; } = [];
 }

@@ -30,7 +30,7 @@
 |---------|---------|---------|
 | Microsoft.AspNetCore.OpenApi | 10.0.1 | OpenAPI support |
 | Microsoft.EntityFrameworkCore | 10.0.1 | EF Core ORM |
-| Microsoft.EntityFrameworkCore.Sqlite | 10.0.1 | SQLite provider |
+| Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.1 | PostgreSQL provider |
 | Microsoft.EntityFrameworkCore.Design | 10.0.1 | Design-time tools |
 | Microsoft.EntityFrameworkCore.Tools | 10.0.1 | Migration tools |
 | Microsoft.Extensions.DependencyInjection | 10.0.1 | DI container |
@@ -61,7 +61,7 @@
 
 All packages use .NET 10.0.1 compatible versions:
 - **Entity Framework Core**: 10.0.1
-- **SQLite**: 10.0.1
+- **PostgreSQL (Npgsql EF Core Provider)**: 10.0.1
 - **Dependency Injection**: 10.0.1
 - **FastEndpoints**: 5.35.0 (latest stable)
 - **ErrorOr**: 2.0.1 (latest stable)
@@ -124,7 +124,7 @@ dotnet publish -c Release -r <runtime-identifier>
 - ✅ FastEndpoints is AOT-compatible
 - ✅ EF Core 10.0+ has improved AOT support
 - ✅ ErrorOr is AOT-compatible
-- ⚠️ SQLite requires specific configuration for AOT
+- ⚠️ EF Core Native AOT support is still limited; validate data paths with integration tests
 - ⚠️ Use source generators for JSON serialization
 
 ### Build Warnings
@@ -142,7 +142,7 @@ dotnet publish -c Release -r <runtime-identifier>
 1. **Central Package Management** - All versions in one place
 2. **AOT Compilation** - Fast startup, low memory
 3. **FastEndpoints** - High-performance API endpoints
-4. **Entity Framework Core** - Database access with SQLite
+4. **Entity Framework Core** - Database access with PostgreSQL
 5. **ErrorOr** - Functional error handling pattern
 6. **Dependency Injection** - Built-in DI container
 
@@ -150,4 +150,3 @@ dotnet publish -c Release -r <runtime-identifier>
 
 **Setup completed on:** February 28, 2026
 **Configuration status:** ✅ Ready for development
-

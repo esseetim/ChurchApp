@@ -1,14 +1,17 @@
+using Projects;
+using ChurchApp.Application.Infrastructure;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
-var sqliteDataPath = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", ".local", "sqlite"));
-Directory.CreateDirectory(sqliteDataPath);
-var sqliteDbPath = Path.Combine(sqliteDataPath, "churchapp.db");
+var postgres = builder.AddPostgres("postgres")
+    .WithImage(DatabaseSettings.ImageName)
+    .WithDataVolume(DatabaseSettings.VolumeName)
+    .WithEnvironment(DatabaseSettings.EnvironmentUser, DatabaseSettings.DefaultUser)
+    .WithEnvironment(DatabaseSettings.EnvironmentPassword, DatabaseSettings.DefaultPassword);
 
-var sqlite = builder.AddContainer("sqlite", "nouchka/sqlite3")
-    .WithBindMount(sqliteDataPath, "/data")
-    .WithArgs("tail", "-f", "/dev/null");
+var churchAppDatabase = postgres.AddDatabase("churchapp");
 
 builder.AddProject("api", "../../ChurchApp.API/ChurchApp.API/ChurchApp.API.csproj")
-    .WithEnvironment("ConnectionStrings__ChurchApp", $"Data Source={sqliteDbPath}");
+    .WithReference(churchAppDatabase);
 
 builder.Build().Run();

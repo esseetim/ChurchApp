@@ -137,7 +137,7 @@ Already configured in `/ChurchApp.API/ChurchApp.API/Properties/launchSettings.js
 - **FastEndpoints 5.35.0** - High-performance endpoints
 - **FastEndpoints.Swagger 5.35.0** - API documentation
 - **Entity Framework Core 10.0.1** - Data access (ready to use)
-- **SQLite 10.0.1** - Database provider (ready to use)
+- **Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1** - Database provider (ready to use)
 - **ErrorOr 2.0.1** - Functional error handling (ready to use)
 - **Microsoft.Extensions.DependencyInjection 10.0.1** - DI container
 
@@ -206,7 +206,7 @@ Update `ServiceCollectionExtensions.cs`:
 public static IServiceCollection AddChurchAppServices(this IServiceCollection services)
 {
     services.AddDbContext<ChurchAppDbContext>(options =>
-        options.UseSqlite("Data Source=churchapp.db"));
+        options.UseNpgsql("Host=localhost;Port=5432;Database=churchapp;Username=churchapp;Password=churchapp"));
     
     return services;
 }
@@ -258,5 +258,4 @@ dotnet ef database update --project ChurchApp.API/ChurchApp.API
 
 **Status:** ✅ **READY FOR DEVELOPMENT**
 
-The CS5001 error is now resolved. The application has a proper Main method and is fully configured to run as an AOT-enabled Web API with FastEndpoints, Entity Framework Core, SQLite, and ErrorOr.
-
+The CS5001 error is now resolved. The application has a proper Main method and is fully configured to run as an AOT-enabled Web API with FastEndpoints, Entity Framework Core, PostgreSQL, and ErrorOr.

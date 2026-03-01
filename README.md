@@ -15,7 +15,7 @@ A .NET 10 AOT-enabled Web API for church management.
 
 ### Key Packages
 - **Entity Framework Core 10.0.1** - Data access layer
-- **SQLite 10.0.1** - Local database provider
+- **Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1** - PostgreSQL provider
 - **FastEndpoints 5.35.0** - High-performance endpoint routing
 - **ErrorOr 2.0.1** - Functional error handling
 - **Microsoft.Extensions.DependencyInjection 10.0.1** - Dependency injection
@@ -53,7 +53,7 @@ dotnet restore
 ./run-api.sh
 ```
 
-### Run with Aspire AppHost (API + SQLite container orchestration)
+### Run with Aspire AppHost (API + PostgreSQL container orchestration)
 ```bash
 ./run-apphost.sh
 ```
@@ -85,7 +85,7 @@ EF Core has limited trimming/NativeAOT compatibility. This project keeps runtime
 
 ## Database
 
-The application uses SQLite for local data storage. Database migrations can be managed using:
+The application uses PostgreSQL for local data storage. Database migrations can be managed using:
 
 ```bash
 # Add a migration

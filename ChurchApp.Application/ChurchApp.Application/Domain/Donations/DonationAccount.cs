@@ -13,5 +13,5 @@ public class DonationAccount
     public string? DisplayName { get; set; }
     public bool IsActive { get; set; } = true;
 
-    public ICollection<Donation> Donations { get; set; } = new List<Donation>();
+    public ICollection<Donation> Donations { get; set; } = [];
 }

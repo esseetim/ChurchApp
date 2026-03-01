@@ -27,7 +27,7 @@ public class Donation : IHasDomainEvents
     public string? VoidReason { get; set; }
     public int Version { get; set; }
 
-    public ICollection<DonationAudit> Audits { get; set; } = new List<DonationAudit>();
+    public ICollection<DonationAudit> Audits { get; set; } = [];
 
     public List<IDomainEvent> DomainEvents { get; } = [];
 

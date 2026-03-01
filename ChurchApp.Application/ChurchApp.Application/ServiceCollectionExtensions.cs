@@ -15,9 +15,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddChurchAppServices(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("ChurchApp")
-            ?? "Data Source=churchapp.db";
+            ?? "Host=localhost;Port=5432;Database=churchapp;Username=churchapp;Password=churchapp";
 
-        services.AddDbContext<ChurchAppDbContext>(options => options.UseSqlite(connectionString));
+        services.AddDbContext<ChurchAppDbContext>(options => options.UseNpgsql(connectionString));
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<ISummaryUpsertService, SummaryUpsertService>();

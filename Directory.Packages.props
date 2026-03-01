@@ -10,9 +10,9 @@
         <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
         <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.1" />
         
-        <!-- Entity Framework Core with SQLite -->
+        <!-- Entity Framework Core with PostgreSQL -->
         <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.1" />
+        <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
         <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -32,6 +32,9 @@
         
         <!-- ErrorOr -->
         <PackageVersion Include="ErrorOr" Version="2.0.1" />
+
+        <!-- Aspire -->
+        <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.1.2" />
 
         <!-- Tests -->
         <PackageVersion Include="coverlet.collector" Version="6.0.4" />

@@ -50,7 +50,7 @@ echo ""
 # List key packages
 echo "📚 Key packages configured:"
 echo "   ✅ Entity Framework Core 10.0.1"
-echo "   ✅ SQLite 10.0.1"
+echo "   ✅ Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1"
 echo "   ✅ FastEndpoints 5.35.0"
 echo "   ✅ ErrorOr 2.0.1"
 echo "   ✅ Dependency Injection 10.0.1"
@@ -68,4 +68,3 @@ echo ""
 echo "To run the API:"
 echo "  cd ChurchApp.API/ChurchApp.API"
 echo "  dotnet run"
-

@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ChurchApp.API\ChurchApp.API\ChurchApp.API.csproj" />
   </ItemGroup>
 </Project>
