@@ -1,4 +1,5 @@
 using ChurchApp.Application.Domain.Members;
+using ChurchApp.Application.Domain.Families;
 
 namespace ChurchApp.Application.Domain.Reports;
 
@@ -13,6 +14,8 @@ public class Summary
     public string? ServiceName { get; set; }
     public Guid? MemberId { get; set; }
     public Member? Member { get; set; }
+    public Guid? FamilyId { get; set; }
+    public Family? Family { get; set; }
 
     public decimal TotalAmount { get; set; }
     public int DonationCount { get; set; }

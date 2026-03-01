@@ -1,8 +1,9 @@
+using ChurchApp.Application.Domain.Common;
 using ChurchApp.Application.Domain.Members;
 
 namespace ChurchApp.Application.Domain.Donations;
 
-public class Donation
+public class Donation : IHasDomainEvents
 {
     public Guid Id { get; set; }
     public Guid MemberId { get; set; }
@@ -15,5 +16,41 @@ public class Donation
     public DonationMethod Method { get; set; }
     public DateOnly DonationDate { get; set; }
     public decimal Amount { get; set; }
+    public string? ServiceName { get; set; }
     public string? Notes { get; set; }
+
+    public List<IDomainEvent> DomainEvents { get; } = [];
+
+    public static Donation Create(
+        Guid memberId,
+        Guid? donationAccountId,
+        DonationType type,
+        DonationMethod method,
+        DateOnly donationDate,
+        decimal amount,
+        string? serviceName,
+        string? notes)
+    {
+        var donation = new Donation
+        {
+            Id = Guid.NewGuid(),
+            MemberId = memberId,
+            DonationAccountId = donationAccountId,
+            Type = type,
+            Method = method,
+            DonationDate = donationDate,
+            Amount = amount,
+            ServiceName = serviceName,
+            Notes = notes
+        };
+
+        donation.DomainEvents.Add(new DonationCreatedDomainEvent(
+            donation.Id,
+            donation.MemberId,
+            donation.DonationDate,
+            donation.Amount,
+            donation.ServiceName));
+
+        return donation;
+    }
 }

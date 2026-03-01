@@ -12,6 +12,7 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
         builder.Property(x => x.Type).HasConversion<int>();
         builder.Property(x => x.Method).HasConversion<int>();
         builder.Property(x => x.Amount).HasPrecision(18, 2);
+        builder.Property(x => x.ServiceName).HasMaxLength(200);
         builder.Property(x => x.Notes).HasMaxLength(1000);
         builder.ToTable(t => t.HasCheckConstraint("CK_Donations_Amount_NotZero", "\"Amount\" <> 0"));
 

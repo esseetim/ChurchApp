@@ -21,6 +21,11 @@ public class SummaryConfiguration : IEntityTypeConfiguration<Summary>
             .HasForeignKey(x => x.MemberId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        builder.HasIndex(x => new { x.Type, x.PeriodType, x.StartDate, x.EndDate, x.GeneratedAtUtc });
+        builder.HasOne(x => x.Family)
+            .WithMany()
+            .HasForeignKey(x => x.FamilyId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(x => new { x.Type, x.PeriodType, x.StartDate, x.EndDate, x.MemberId, x.FamilyId, x.ServiceName });
     }
 }
