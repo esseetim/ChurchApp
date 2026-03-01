@@ -7,9 +7,11 @@ The error `CS5001: Program does not contain a static 'Main' method suitable for 
 ## 📝 What Was Implemented
 
 ### 1. Program.cs - Main Entry Point
+
 **File:** `/ChurchApp.API/ChurchApp.API/Program.cs`
 
 ✅ **Implemented:**
+
 - Static `Main(string[] args)` method
 - WebApplication.CreateSlimBuilder for AOT optimization
 - FastEndpoints integration
@@ -18,6 +20,7 @@ The error `CS5001: Program does not contain a static 'Main' method suitable for 
 - Complete middleware pipeline
 
 **Key Features:**
+
 ```csharp
 - Uses WebApplication.CreateSlimBuilder (optimized for AOT)
 - Configures JSON serialization with source generation
@@ -28,23 +31,28 @@ The error `CS5001: Program does not contain a static 'Main' method suitable for 
 ```
 
 ### 2. AppJsonSerializerContext.cs - AOT JSON Serialization
+
 **File:** `/ChurchApp.API/ChurchApp.API/AppJsonSerializerContext.cs`
 
 ✅ **Created:**
+
 - Partial JSON serializer context class
 - Source generation for AOT compatibility
 - Registered common types (string, int, bool, Dictionary, List)
 - Registered HealthResponse type
 
 **Purpose:**
+
 - Enables JSON serialization without reflection
 - Required for Native AOT compilation
 - Add new DTOs here as `[JsonSerializable(typeof(YourType))]`
 
 ### 3. HealthCheckEndpoint.cs - Sample Endpoint
+
 **File:** `/ChurchApp.API/ChurchApp.API/Endpoints/HealthCheckEndpoint.cs`
 
 ✅ **Created:**
+
 - Health check endpoint at `/health`
 - FastEndpoints implementation
 - Returns API status, timestamp, and version
@@ -52,6 +60,7 @@ The error `CS5001: Program does not contain a static 'Main' method suitable for 
 - Swagger documentation included
 
 **Response:**
+
 ```json
 {
   "status": "Healthy",
@@ -76,12 +85,14 @@ ChurchApp.Application (Business Logic)
 ## 🚀 How to Run
 
 ### Option 1: Run with dotnet CLI
+
 ```bash
 cd ChurchApp.API/ChurchApp.API
 dotnet run
 ```
 
 ### Option 2: Build and Run
+
 ```bash
 # Build the solution
 dotnet build
@@ -92,6 +103,7 @@ dotnet run --no-build
 ```
 
 ### Option 3: Watch Mode (Development)
+
 ```bash
 cd ChurchApp.API/ChurchApp.API
 dotnet watch run
@@ -115,7 +127,9 @@ open http://localhost:5000/swagger
 ## 🔧 Configuration
 
 ### appsettings.json
+
 Configure your application settings:
+
 ```json
 {
   "Logging": {
@@ -129,11 +143,13 @@ Configure your application settings:
 ```
 
 ### launchSettings.json
+
 Already configured in `/ChurchApp.API/ChurchApp.API/Properties/launchSettings.json`
 
 ## 📦 Dependencies Configured
 
 ✅ All packages are working:
+
 - **FastEndpoints 5.35.0** - High-performance endpoints
 - **FastEndpoints.Swagger 5.35.0** - API documentation
 - **Entity Framework Core 10.0.1** - Data access (ready to use)
@@ -146,6 +162,7 @@ Already configured in `/ChurchApp.API/ChurchApp.API/Properties/launchSettings.js
 The application is fully configured for Native AOT:
 
 ✅ **Enabled:**
+
 - PublishAot = true
 - InvariantGlobalization = true
 - PublishTrimmed = true
@@ -156,6 +173,7 @@ The application is fully configured for Native AOT:
 ## 🎯 Next Steps
 
 ### 1. Add More Endpoints
+
 Create new endpoints in the `Endpoints` folder:
 
 ```csharp
@@ -180,6 +198,7 @@ public class MyEndpoint : Endpoint<MyRequest, MyResponse>
 ```
 
 ### 2. Add Database Context
+
 Create a DbContext in the Application project:
 
 ```csharp
@@ -200,6 +219,7 @@ public class ChurchAppDbContext : DbContext
 ```
 
 ### 3. Register DbContext
+
 Update `ServiceCollectionExtensions.cs`:
 
 ```csharp
@@ -213,6 +233,7 @@ public static IServiceCollection AddChurchAppServices(this IServiceCollection se
 ```
 
 ### 4. Add Domain Entities
+
 Create your entities in `/ChurchApp.Application/Domain/`:
 
 ```csharp
@@ -228,6 +249,7 @@ public class Member
 ```
 
 ### 5. Create Migrations
+
 ```bash
 dotnet ef migrations add InitialCreate \
   --project ChurchApp.Application/ChurchApp.Application \
@@ -238,9 +260,9 @@ dotnet ef database update --project ChurchApp.API/ChurchApp.API
 
 ## 📚 Additional Resources
 
-- **FastEndpoints Documentation:** https://fast-endpoints.com/
-- **EF Core Documentation:** https://learn.microsoft.com/ef/core/
-- **Native AOT:** https://learn.microsoft.com/dotnet/core/deploying/native-aot/
+- **FastEndpoints Documentation:** <https://fast-endpoints.com/>
+- **EF Core Documentation:** <https://learn.microsoft.com/ef/core/>
+- **Native AOT:** <https://learn.microsoft.com/dotnet/core/deploying/native-aot/>
 
 ## ✅ Verification Checklist
 

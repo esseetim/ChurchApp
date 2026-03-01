@@ -3,23 +3,27 @@
 ## 🚀 Quick Start Commands
 
 ### Run the Application
+
 ```bash
 cd ChurchApp.API/ChurchApp.API
 dotnet run
 ```
 
 ### Build the Solution
+
 ```bash
 dotnet build
 ```
 
 ### Clean and Rebuild
+
 ```bash
 dotnet clean
 dotnet build
 ```
 
 ### Run with Watch (Auto-reload on changes)
+
 ```bash
 cd ChurchApp.API/ChurchApp.API
 dotnet watch run
@@ -28,6 +32,7 @@ dotnet watch run
 ## 🧪 Testing Endpoints
 
 ### Health Check
+
 ```bash
 # Using curl
 curl http://localhost:5000/health
@@ -37,6 +42,7 @@ curl http://localhost:5000/health
 ```
 
 ### View Swagger UI (Development only)
+
 ```bash
 # Open in browser
 open http://localhost:5000/swagger
@@ -46,6 +52,7 @@ open http://localhost:5000/swagger
 ## 📝 Creating New Endpoints
 
 ### Step 1: Create Endpoint File
+
 Create a new file in `ChurchApp.API/Endpoints/`:
 
 ```csharp
@@ -84,6 +91,7 @@ public class MemberDto
 ```
 
 ### Step 2: Add DTO to JSON Context
+
 Update `AppJsonSerializerContext.cs`:
 
 ```csharp
@@ -95,6 +103,7 @@ public partial class AppJsonSerializerContext : JsonSerializerContext
 ```
 
 ### Step 3: Run and Test
+
 ```bash
 dotnet run
 curl http://localhost:5000/api/members
@@ -103,6 +112,7 @@ curl http://localhost:5000/api/members
 ## 🗄️ Database Operations
 
 ### Add EF Core Migration
+
 ```bash
 dotnet ef migrations add MigrationName \
   --project ChurchApp.Application/ChurchApp.Application \
@@ -110,12 +120,14 @@ dotnet ef migrations add MigrationName \
 ```
 
 ### Update Database
+
 ```bash
 dotnet ef database update \
   --project ChurchApp.API/ChurchApp.API
 ```
 
 ### Remove Last Migration
+
 ```bash
 dotnet ef migrations remove \
   --project ChurchApp.Application/ChurchApp.Application \
@@ -123,6 +135,7 @@ dotnet ef migrations remove \
 ```
 
 ### List Migrations
+
 ```bash
 dotnet ef migrations list \
   --project ChurchApp.API/ChurchApp.API
@@ -131,6 +144,7 @@ dotnet ef migrations list \
 ## 📦 Package Management
 
 ### Add a New Package
+
 ```bash
 # 1. Add version to Directory.Packages.props
 <PackageVersion Include="PackageName" Version="1.0.0" />
@@ -143,6 +157,7 @@ dotnet restore
 ```
 
 ### Update All Packages
+
 ```bash
 # Update versions in Directory.Packages.props
 dotnet restore
@@ -151,26 +166,31 @@ dotnet restore
 ## 🔍 Useful Commands
 
 ### Check .NET Version
+
 ```bash
 dotnet --version
 ```
 
 ### List All Projects
+
 ```bash
 dotnet sln list
 ```
 
 ### List Installed Packages
+
 ```bash
 dotnet list package
 ```
 
 ### Check for Package Updates
+
 ```bash
 dotnet list package --outdated
 ```
 
 ### Run Tests (when you add tests)
+
 ```bash
 dotnet test
 ```
@@ -178,17 +198,20 @@ dotnet test
 ## 🐛 Debugging
 
 ### Run with Detailed Logging
+
 ```bash
 export ASPNETCORE_ENVIRONMENT=Development
 dotnet run --verbosity detailed
 ```
 
 ### Check Build Errors
+
 ```bash
 dotnet build --verbosity normal
 ```
 
 ### Clear NuGet Cache (if package issues)
+
 ```bash
 dotnet nuget locals all --clear
 dotnet restore
@@ -197,6 +220,7 @@ dotnet restore
 ## 📊 Performance
 
 ### Publish for Production (AOT)
+
 ```bash
 # For macOS (Apple Silicon)
 dotnet publish -c Release -r osx-arm64
@@ -212,6 +236,7 @@ dotnet publish -c Release -r win-x64
 ```
 
 ### Check Published Output Size
+
 ```bash
 ls -lh ChurchApp.API/ChurchApp.API/bin/Release/net10.0/osx-arm64/publish/
 ```
@@ -219,6 +244,7 @@ ls -lh ChurchApp.API/ChurchApp.API/bin/Release/net10.0/osx-arm64/publish/
 ## 🔒 Common Patterns
 
 ### Using ErrorOr for Error Handling
+
 ```csharp
 using ErrorOr;
 
@@ -240,6 +266,7 @@ public class MyEndpoint : Endpoint<MyRequest, MyResponse>
 ```
 
 ### Dependency Injection in Endpoints
+
 ```csharp
 public class MyEndpoint : Endpoint<MyRequest, MyResponse>
 {
@@ -284,17 +311,17 @@ ChurchApp.Application/
 
 ## 📚 Resources
 
-- **FastEndpoints Docs:** https://fast-endpoints.com/
-- **EF Core Docs:** https://learn.microsoft.com/ef/core/
-- **ErrorOr GitHub:** https://github.com/amantinband/error-or
-- **.NET AOT Docs:** https://learn.microsoft.com/dotnet/core/deploying/native-aot/
+- **FastEndpoints Docs:** <https://fast-endpoints.com/>
+- **EF Core Docs:** <https://learn.microsoft.com/ef/core/>
+- **ErrorOr GitHub:** <https://github.com/amantinband/error-or>
+- **.NET AOT Docs:** <https://learn.microsoft.com/dotnet/core/deploying/native-aot/>
 
 ---
 
 **Pro Tips:**
+
 - Use `dotnet watch run` during development for hot reload
 - Keep DTOs in the same file as endpoints or in a separate DTOs folder
 - Always add new DTOs to `AppJsonSerializerContext.cs` for AOT
 - Use ErrorOr for functional error handling instead of exceptions
 - Group endpoints by feature for better organization
-
