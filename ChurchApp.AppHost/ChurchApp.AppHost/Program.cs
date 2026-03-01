@@ -12,10 +12,12 @@ var postgres = builder.AddPostgres("postgres", postgresUser, postgresPassword)
 var churchAppDatabase = postgres.AddDatabase("churchapp");
 
 var api = builder.AddProject<ChurchApp_API>("api")
-    .WithReference(churchAppDatabase);
+    .WithReference(churchAppDatabase)
+    .WithHttpsEndpoint(name: "https");
 
 builder.AddExecutable("web", "npm", "../../ChurchApp.Web", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173")
-    .WithEnvironment("VITE_API_BASE_URL", api.GetEndpoint("http"))
+    .WithHttpsEndpoint(name: "https", targetPort: 5173)
+    .WithEnvironment("VITE_API_BASE_URL", api.GetEndpoint("https"))
     .WithEnvironment("PATH", $"{Environment.GetEnvironmentVariable("PATH")}:/opt/homebrew/opt/node@22/bin");
 
 builder.Build().Run();
