@@ -35,6 +35,7 @@
 
         <!-- Aspire -->
         <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.1.2" />
+        <PackageVersion Include="Aspire.Hosting.Testing" Version="13.1.2" />
 
         <!-- Tests -->
         <PackageVersion Include="coverlet.collector" Version="6.0.4" />

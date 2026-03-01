@@ -65,6 +65,8 @@ dotnet restore
 dotnet test -p:WarningsNotAsErrors=NU1507
 ```
 
+> Integration tests start real Docker containers (PostgreSQL and Aspire-orchestrated resources), so Docker must be running.
+
 ### Publish AOT
 ```bash
 dotnet publish -c Release

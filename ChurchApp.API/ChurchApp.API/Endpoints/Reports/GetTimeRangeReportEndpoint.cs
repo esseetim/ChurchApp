@@ -25,17 +25,25 @@ public sealed class GetTimeRangeReportEndpoint(ChurchAppDbContext dbContext)
                         && x.DonationDate >= req.StartDate
                         && x.DonationDate <= req.EndDate);
 
-        var totalAmount = await donations.SumAsync(x => x.Amount, ct);
+        var totalAmount = await donations
+            .Select(x => (decimal?)x.Amount)
+            .SumAsync(ct) ?? 0m;
         var donationCount = await donations.CountAsync(ct);
 
-        var breakdown = await donations
+        var breakdownRows = await donations
             .GroupBy(x => x.Type)
-            .Select(x => new DonationTypeBreakdownDto(
-                x.Key,
-                x.Sum(v => v.Amount),
-                x.Count()))
+            .Select(x => new
+            {
+                Type = x.Key,
+                TotalAmount = x.Sum(v => v.Amount),
+                DonationCount = x.Count()
+            })
             .OrderBy(x => x.Type)
             .ToListAsync(ct);
+        
+        var breakdown = breakdownRows
+            .Select(x => new DonationTypeBreakdownDto(x.Type, x.TotalAmount, x.DonationCount))
+            .ToList();
 
         var response = new TimeRangeReportResponse(
             req.StartDate,

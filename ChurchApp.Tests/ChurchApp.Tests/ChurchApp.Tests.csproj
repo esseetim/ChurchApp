@@ -10,9 +10,11 @@
     <IsAotCompatible>false</IsAotCompatible>
     <EnableAotAnalyzer>false</EnableAotAnalyzer>
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Testing" />
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -21,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ChurchApp.AppHost\ChurchApp.AppHost\ChurchApp.AppHost.csproj" />
     <ProjectReference Include="..\..\ChurchApp.API\ChurchApp.API\ChurchApp.API.csproj" />
     <ProjectReference Include="..\..\ChurchApp.Application\ChurchApp.Application\ChurchApp.Application.csproj" />
   </ItemGroup>

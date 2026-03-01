@@ -21,11 +21,6 @@ public class DonationFlowTests : IClassFixture<ApiTestFactory>
     [Fact]
     public async Task CreateDonation_ShouldPersistDonationSummaryAndAudit()
     {
-        if (!_factory.IsDatabaseAvailable)
-        {
-            return;
-        }
-
         await ResetDatabaseAsync();
         var memberId = await SeedMemberAsync();
         var client = _factory.CreateClient();
@@ -63,11 +58,6 @@ public class DonationFlowTests : IClassFixture<ApiTestFactory>
     [Fact]
     public async Task VoidDonation_ShouldRollbackSummaryAndCreateVoidAudit()
     {
-        if (!_factory.IsDatabaseAvailable)
-        {
-            return;
-        }
-
         await ResetDatabaseAsync();
         var memberId = await SeedMemberAsync();
         var client = _factory.CreateClient();

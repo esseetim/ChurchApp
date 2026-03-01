@@ -2,11 +2,12 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder.AddPostgres("postgres")
-    .WithImage("postgres, 16")
-    .WithDataVolume("churchapp-postgres-data")
-    .WithEnvironment("POSTGRES_USER", "churchapp")
-    .WithEnvironment("POSTGRES_PASSWORD", "churchapp");
+var postgresUser = builder.AddParameter("postgres-user", "churchapp", publishValueAsDefault: true, secret: false);
+var postgresPassword = builder.AddParameter("postgres-password", "churchapp", publishValueAsDefault: false, secret: true);
+
+var postgres = builder.AddPostgres("postgres", postgresUser, postgresPassword)
+    .WithImage("postgres", "16")
+    .WithDataVolume("churchapp-postgres-data");
 
 var churchAppDatabase = postgres.AddDatabase("churchapp");
 
