@@ -1,0 +1,22 @@
+<RadzenCard Style="margin-bottom: 1rem;">
+    <h3 class="text-sm font-semibold text-slate-900" style="margin-bottom: 0.75rem;">Quick Create Family</h3>
+    
+    <EditForm Model="@model" OnValidSubmit="@HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <div style="margin-bottom: 0.75rem;">
+            <RadzenTextBox @bind-Value="@model.Name" 
+                          Placeholder="Family name" 
+                          Style="width: 100%;"
+                          Disabled="@IsSubmitting" />
+            <ValidationMessage For="@(() => model.Name)" />
+        </div>
+        
+        <RadzenButton ButtonType="ButtonType.Submit" 
+                     ButtonStyle="ButtonStyle.Primary" 
+                     Text="Create Family"
+                     Disabled="@IsSubmitting"
+                     Icon="@(IsSubmitting ? "autorenew" : "group_add")"
+                     IsBusy="@IsSubmitting" />
+    </EditForm>
+</RadzenCard>

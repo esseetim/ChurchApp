@@ -15,5 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ChurchApp.API\ChurchApp.API\ChurchApp.API.csproj" />
+    <ProjectReference Include="..\..\ChurchApp.Web.Blazor\ChurchApp.Web.Blazor.csproj" />
   </ItemGroup>
 </Project>

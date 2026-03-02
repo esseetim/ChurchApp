@@ -1,0 +1,14 @@
+<RadzenDropDown @bind-Value="@SelectedFamilyId"
+                Data="@Families"
+                TextProperty="Name"
+                ValueProperty="Id"
+                Placeholder="Select family (optional)"
+                AllowClear="true"
+                AllowFiltering="true"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                Style="width: 100%;"
+                Change="@OnFamilyChanged">
+    <Template Context="family">
+        @family.Name <span style="color: var(--slate-600); font-size: 0.875rem;">(@family.MemberCount members)</span>
+    </Template>
+</RadzenDropDown>

@@ -6,7 +6,7 @@ A .NET 10 AOT-enabled Web API for church management.
 
 - **ChurchApp.API** - Web API project with FastEndpoints
 - **ChurchApp.Application** - Application layer with business logic
-- **ChurchApp.Web** - Volunteer desk UI (React + Vite + TypeScript + TailwindCSS)
+- **ChurchApp.Web.Blazor** - Volunteer desk UI (Blazor WebAssembly + Radzen)
 
 ## Technology Stack
 
@@ -124,3 +124,4 @@ dotnet ef database update --project ChurchApp.API/ChurchApp.API
 - InvariantGlobalization is enabled for smaller binary size
 - JSON serialization does not use reflection by default
 - Enable trim analyzers to catch AOT compatibility issues early
+

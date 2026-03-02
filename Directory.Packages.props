@@ -23,8 +23,8 @@
         </PackageVersion>
         
         <!-- Dependency Injection -->
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
         
         <!-- FastEndpoints -->
         <PackageVersion Include="FastEndpoints" Version="5.35.0" />
@@ -32,6 +32,14 @@
         
         <!-- ErrorOr -->
         <PackageVersion Include="ErrorOr" Version="2.0.1" />
+
+        <!-- Blazor WebAssembly -->
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2" />
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.2" />
+        <PackageVersion Include="Radzen.Blazor" Version="5.9.5" />
+        
+        <!-- HTTP & Resilience -->
+        <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.1.0" />
 
         <!-- Aspire -->
         <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.1.2" />

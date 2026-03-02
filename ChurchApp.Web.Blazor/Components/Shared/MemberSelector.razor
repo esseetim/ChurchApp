@@ -1,0 +1,14 @@
+<RadzenDropDown @bind-Value="@SelectedMemberId"
+                Data="@Members"
+                TextProperty="DisplayName"
+                ValueProperty="Id"
+                Placeholder="Select member"
+                AllowClear="true"
+                AllowFiltering="true"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                Style="width: 100%;"
+                Change="@OnMemberChanged">
+    <Template Context="member">
+        @member.FirstName @member.LastName
+    </Template>
+</RadzenDropDown>

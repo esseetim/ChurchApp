@@ -29,4 +29,5 @@
   </Folder>
   <Project Path="ChurchApp.API/ChurchApp.API/ChurchApp.API.csproj" />
   <Project Path="ChurchApp.Application/ChurchApp.Application/ChurchApp.Application.csproj" />
+  <Project Path="ChurchApp.Web.Blazor/ChurchApp.Web.Blazor.csproj" />
 </Solution>

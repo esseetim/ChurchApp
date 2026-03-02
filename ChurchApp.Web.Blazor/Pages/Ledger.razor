@@ -1,0 +1,126 @@
+@page "/ledger"
+
+<h2 class="text-xl font-bold text-slate-900" style="margin-bottom: 1.5rem;">Donation Ledger</h2>
+
+<RadzenCard Style="margin-bottom: 1rem;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; align-items: end;">
+        <div>
+            <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Start Date</label>
+            <RadzenDatePicker @bind-Value="@startDate"
+                            DateFormat="yyyy-MM-dd"
+                            Style="width: 100%;" />
+        </div>
+        
+        <div>
+            <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">End Date</label>
+            <RadzenDatePicker @bind-Value="@endDate"
+                            DateFormat="yyyy-MM-dd"
+                            Style="width: 100%;" />
+        </div>
+        
+        <div>
+            <RadzenCheckBox @bind-Value="@includeVoided" Name="includeVoided" />
+            <RadzenLabel Text="Include voided" Component="includeVoided" Style="margin-left: 0.5rem;" />
+        </div>
+        
+        <RadzenButton Text="Refresh Ledger"
+                     Icon="refresh"
+                     ButtonStyle="ButtonStyle.Primary"
+                     Click="@LoadDonations"
+                     Disabled="@isLoading" />
+    </div>
+</RadzenCard>
+
+<RadzenCard>
+    <RadzenDataGrid @ref="grid"
+                    Data="@donations"
+                    TItem="DonationLedgerItem"
+                    AllowPaging="true"
+                    PageSize="20"
+                    AllowSorting="true"
+                    IsLoading="@isLoading"
+                    EmptyText="No donations found">
+        <Columns>
+            <RadzenDataGridColumn TItem="DonationLedgerItem" Property="DonationDate" Title="Date" Width="120px">
+                <Template Context="donation">
+                    @DateTime.Parse(donation.DonationDate).ToString("yyyy-MM-dd")
+                </Template>
+            </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="DonationLedgerItem" Property="Amount" Title="Amount" Width="120px">
+                <Template Context="donation">
+                    $@donation.Amount.ToString("F2")
+                </Template>
+            </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="DonationLedgerItem" Property="Type" Title="Type" Width="150px">
+                <Template Context="donation">
+                    @GetDonationTypeLabel(donation.Type)
+                </Template>
+            </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="DonationLedgerItem" Property="Method" Title="Method" Width="120px">
+                <Template Context="donation">
+                    @GetDonationMethodLabel(donation.Method)
+                </Template>
+            </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="DonationLedgerItem" Property="Status" Title="Status" Width="100px">
+                <Template Context="donation">
+                    @if (donation.Status == DonationStatus.Active)
+                    {
+                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="Active" />
+                    }
+                    else
+                    {
+                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text="Voided" />
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="DonationLedgerItem" Property="ServiceName" Title="Service" Width="150px">
+                <Template Context="donation">
+                    @(donation.ServiceName ?? "-")
+                </Template>
+            </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="DonationLedgerItem" Title="Action" Width="120px" Sortable="false">
+                <Template Context="donation">
+                    @if (donation.Status == DonationStatus.Active)
+                    {
+                        <RadzenButton Text="Void"
+                                    Size="ButtonSize.Small"
+                                    ButtonStyle="ButtonStyle.Danger"
+                                    Click="@(() => VoidDonationClick(donation))" />
+                    }
+                    else
+                    {
+                        <span style="font-size: 0.75rem; color: var(--slate-500);">@(donation.VoidReason ?? "-")</span>
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</RadzenCard>
+
+@code {
+    // Dialog content for void reason - kept in .razor for Razor syntax support
+    public RenderFragment BuildVoidDialogContent(DialogService ds) => __builder =>
+    {
+        <div>
+            <p style="margin-bottom: 1rem;">Please enter a reason for voiding this donation:</p>
+            <RadzenTextBox @bind-Value="@VoidReason" 
+                          Placeholder="Enter void reason" 
+                          Style="width: 100%; margin-bottom: 1rem;" />
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <RadzenButton Text="Cancel" 
+                            Click="() => ds.Close(false)" 
+                            ButtonStyle="ButtonStyle.Light" />
+                <RadzenButton Text="Void Donation" 
+                            Click="() => ds.Close(true)" 
+                            ButtonStyle="ButtonStyle.Danger"
+                            Disabled="@string.IsNullOrWhiteSpace(VoidReason)" />
+            </div>
+        </div>
+    };
+}

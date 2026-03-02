@@ -15,9 +15,8 @@ var api = builder.AddProject<ChurchApp_API>("api")
     .WithReference(churchAppDatabase)
     .WithHttpsEndpoint(name: "https");
 
-builder.AddExecutable("web", "npm", "../../ChurchApp.Web", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173")
-    .WithHttpsEndpoint(name: "https", targetPort: 5173)
-    .WithEnvironment("VITE_API_BASE_URL", api.GetEndpoint("https"))
-    .WithEnvironment("PATH", $"{Environment.GetEnvironmentVariable("PATH")}:/opt/homebrew/opt/node@22/bin");
+var web = builder.AddProject<Projects.ChurchApp_Web_Blazor>("web")
+    .WithHttpsEndpoint(name: "https")
+    .WithEnvironment("ApiBaseUrl", api.GetEndpoint("https"));
 
 builder.Build().Run();

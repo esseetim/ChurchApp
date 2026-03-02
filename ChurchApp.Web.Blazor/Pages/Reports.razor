@@ -1,0 +1,79 @@
+@page "/reports"
+
+<h2 class="text-xl font-bold text-slate-900" style="margin-bottom: 1.5rem;">Time-Range Report</h2>
+
+<RadzenCard Style="margin-bottom: 1.5rem;">
+    <EditForm Model="@reportModel" OnValidSubmit="@GenerateReport">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; align-items: end;">
+            <div>
+                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Start Date</label>
+                <RadzenDatePicker @bind-Value="@reportModel.StartDate"
+                                DateFormat="yyyy-MM-dd"
+                                Style="width: 100%;" />
+            </div>
+            
+            <div>
+                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">End Date</label>
+                <RadzenDatePicker @bind-Value="@reportModel.EndDate"
+                                DateFormat="yyyy-MM-dd"
+                                Style="width: 100%;" />
+            </div>
+            
+            <div>
+                <RadzenCheckBox @bind-Value="@reportModel.PersistReport" Name="persistReport" />
+                <RadzenLabel Text="Persist report" Component="persistReport" Style="margin-left: 0.5rem;" />
+            </div>
+            
+            <RadzenButton ButtonType="ButtonType.Submit"
+                        Text="Generate Report"
+                        Icon="assessment"
+                        ButtonStyle="ButtonStyle.Primary"
+                        Disabled="@isLoading"
+                        IsBusy="@isLoading" />
+        </div>
+    </EditForm>
+</RadzenCard>
+
+@if (report != null)
+{
+    <RadzenCard>
+        <div style="margin-bottom: 1rem;">
+            <p class="text-sm text-slate-700">
+                <span class="font-semibold">Period:</span> @report.StartDate → @report.EndDate
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--slate-900);">
+                Total: $@report.TotalAmount.ToString("F2")
+            </p>
+            <p class="text-sm text-slate-700">
+                @report.DonationCount total donation(s)
+            </p>
+        </div>
+
+        <h3 class="font-semibold text-slate-900" style="margin-bottom: 0.75rem;">Breakdown by Type</h3>
+        
+        <RadzenDataGrid Data="@report.Breakdown"
+                       TItem="DonationTypeBreakdown"
+                       AllowPaging="false"
+                       AllowSorting="true">
+            <Columns>
+                <RadzenDataGridColumn TItem="DonationTypeBreakdown" Property="Type" Title="Type">
+                    <Template Context="item">
+                        @GetDonationTypeLabel(item.Type)
+                    </Template>
+                </RadzenDataGridColumn>
+                
+                <RadzenDataGridColumn TItem="DonationTypeBreakdown" Property="TotalAmount" Title="Amount">
+                    <Template Context="item">
+                        $@item.TotalAmount.ToString("F2")
+                    </Template>
+                </RadzenDataGridColumn>
+                
+                <RadzenDataGridColumn TItem="DonationTypeBreakdown" Property="DonationCount" Title="Count">
+                    <Template Context="item">
+                        @item.DonationCount
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenCard>
+}

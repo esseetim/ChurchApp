@@ -1,0 +1,126 @@
+@page "/summaries"
+
+<h2 class="text-xl font-bold text-slate-900" style="margin-bottom: 1.5rem;">Summaries</h2>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+    <!-- Service Summary -->
+    <RadzenCard>
+        <h3 class="font-semibold text-slate-900" style="margin-bottom: 0.75rem;">Service Summary</h3>
+        <EditForm Model="@serviceSummaryModel" OnValidSubmit="@RunServiceSummary">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <RadzenTextBox @bind-Value="@serviceSummaryModel.ServiceName"
+                             Placeholder="Service name"
+                             Style="width: 100%;" />
+                
+                <RadzenDatePicker @bind-Value="@serviceSummaryModel.StartDate"
+                                DateFormat="yyyy-MM-dd"
+                                Style="width: 100%;"
+                                Placeholder="Start date" />
+                
+                <RadzenDatePicker @bind-Value="@serviceSummaryModel.EndDate"
+                                DateFormat="yyyy-MM-dd"
+                                Style="width: 100%;"
+                                Placeholder="End date" />
+                
+                <RadzenButton ButtonType="ButtonType.Submit"
+                            Text="Run Service Summary"
+                            ButtonStyle="ButtonStyle.Primary"
+                            Icon="summarize"
+                            Disabled="@isLoading"
+                            Style="width: 100%;" />
+            </div>
+        </EditForm>
+    </RadzenCard>
+
+    <!-- Member Summary -->
+    <RadzenCard>
+        <h3 class="font-semibold text-slate-900" style="margin-bottom: 0.75rem;">Member Summary</h3>
+        <EditForm Model="@memberSummaryModel" OnValidSubmit="@RunMemberSummary">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <RadzenDropDown @bind-Value="@memberSummaryModel.MemberId"
+                              Data="@members"
+                              TextProperty="DisplayName"
+                              ValueProperty="Id"
+                              Placeholder="Select member"
+                              AllowFiltering="true"
+                              FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                              Style="width: 100%;" />
+                
+                <RadzenDatePicker @bind-Value="@memberSummaryModel.StartDate"
+                                DateFormat="yyyy-MM-dd"
+                                Style="width: 100%;"
+                                Placeholder="Start date" />
+                
+                <RadzenDatePicker @bind-Value="@memberSummaryModel.EndDate"
+                                DateFormat="yyyy-MM-dd"
+                                Style="width: 100%;"
+                                Placeholder="End date" />
+                
+                <RadzenButton ButtonType="ButtonType.Submit"
+                            Text="Run Member Summary"
+                            ButtonStyle="ButtonStyle.Primary"
+                            Icon="person"
+                            Disabled="@isLoading"
+                            Style="width: 100%;" />
+            </div>
+        </EditForm>
+    </RadzenCard>
+
+    <!-- Family Summary -->
+    <RadzenCard>
+        <h3 class="font-semibold text-slate-900" style="margin-bottom: 0.75rem;">Family Summary</h3>
+        <EditForm Model="@familySummaryModel" OnValidSubmit="@RunFamilySummary">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <RadzenDropDown @bind-Value="@familySummaryModel.FamilyId"
+                              Data="@families"
+                              TextProperty="Name"
+                              ValueProperty="Id"
+                              Placeholder="Select family"
+                              AllowFiltering="true"
+                              FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                              Style="width: 100%;" />
+                
+                <RadzenDatePicker @bind-Value="@familySummaryModel.StartDate"
+                                DateFormat="yyyy-MM-dd"
+                                Style="width: 100%;"
+                                Placeholder="Start date" />
+                
+                <RadzenDatePicker @bind-Value="@familySummaryModel.EndDate"
+                                DateFormat="yyyy-MM-dd"
+                                Style="width: 100%;"
+                                Placeholder="End date" />
+                
+                <RadzenButton ButtonType="ButtonType.Submit"
+                            Text="Run Family Summary"
+                            ButtonStyle="ButtonStyle.Primary"
+                            Icon="groups"
+                            Disabled="@isLoading"
+                            Style="width: 100%;" />
+            </div>
+        </EditForm>
+    </RadzenCard>
+</div>
+
+<!-- Results -->
+@if (summaries.Any())
+{
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem;">
+        @foreach (var summary in summaries)
+        {
+            <RadzenCard Style="border-left: 4px solid var(--blue-600);">
+                <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--blue-700);">
+                    @(summary.ServiceName ?? "Summary")
+                </p>
+                <p style="margin-top: 0.25rem; font-size: 1.125rem; font-weight: 700; color: var(--slate-900);">
+                    $@summary.TotalAmount.ToString("F2")
+                </p>
+                <p style="font-size: 0.875rem; color: var(--slate-600);">
+                    @summary.DonationCount donation(s)
+                </p>
+                <p style="font-size: 0.75rem; color: var(--slate-500);">
+                    @summary.StartDate → @summary.EndDate
+                </p>
+            </RadzenCard>
+        }
+    </div>
+}

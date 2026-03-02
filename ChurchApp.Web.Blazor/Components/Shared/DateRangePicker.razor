@@ -1,0 +1,13 @@
+<div class="date-range-picker">
+    <RadzenDatePicker @bind-Value="@StartDate" 
+                      Placeholder="Start Date"
+                      DateFormat="yyyy-MM-dd"
+                      Style="width: 100%;"
+                      Change="@OnDateChanged" />
+    
+    <RadzenDatePicker @bind-Value="@EndDate" 
+                      Placeholder="End Date"
+                      DateFormat="yyyy-MM-dd"
+                      Style="width: 100%;"
+                      Change="@OnDateChanged" />
+</div>
