@@ -12,7 +12,7 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
     public partial class ChurchAppDbContextModel
     {
         private ChurchAppDbContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("f5f7bee9-dcb0-4f9e-a507-b3486c34424a"), entityTypeCount: 9)
+            : base(skipDetectChanges: false, modelId: new Guid("03bb1d30-04d1-47b2-8ab5-edbb70cdc318"), entityTypeCount: 10)
         {
         }
 
@@ -27,6 +27,7 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
             var financialObligation = FinancialObligationEntityType.Create(this);
             var report = ReportEntityType.Create(this);
             var summary = SummaryEntityType.Create(this);
+            var rawTransaction = RawTransactionEntityType.Create(this);
 
             DonationEntityType.CreateForeignKey1(donation, donationAccount);
             DonationEntityType.CreateForeignKey2(donation, member);
@@ -40,6 +41,7 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
             ReportEntityType.CreateForeignKey2(report, member);
             SummaryEntityType.CreateForeignKey1(summary, family);
             SummaryEntityType.CreateForeignKey2(summary, member);
+            RawTransactionEntityType.CreateForeignKey1(rawTransaction, donation);
 
             DonationEntityType.CreateAnnotations(donation);
             DonationAccountEntityType.CreateAnnotations(donationAccount);
@@ -50,6 +52,7 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
             FinancialObligationEntityType.CreateAnnotations(financialObligation);
             ReportEntityType.CreateAnnotations(report);
             SummaryEntityType.CreateAnnotations(summary);
+            RawTransactionEntityType.CreateAnnotations(rawTransaction);
 
             AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
             AddAnnotation("ProductVersion", "10.0.1");

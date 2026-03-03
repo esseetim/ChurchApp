@@ -4,11 +4,13 @@ using ChurchApp.Application.Domain.Families;
 using ChurchApp.Application.Domain.Members;
 using ChurchApp.Application.Domain.Obligations;
 using ChurchApp.Application.Domain.Reports;
+using ChurchApp.Application.Domain.Transactions;
 using ChurchApp.Application.Infrastructure.Configurations.Donations;
 using ChurchApp.Application.Infrastructure.Configurations.Families;
 using ChurchApp.Application.Infrastructure.Configurations.Members;
 using ChurchApp.Application.Infrastructure.Configurations.Obligations;
 using ChurchApp.Application.Infrastructure.Configurations.Reports;
+using ChurchApp.Application.Infrastructure.Configurations.Transactions;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChurchApp.Application.Infrastructure;
@@ -24,6 +26,8 @@ public sealed class ChurchAppDbContext(DbContextOptions<ChurchAppDbContext> opti
     public DbSet<Donation> Donations => Set<Donation>();
     public DbSet<DonationAudit> DonationAudits => Set<DonationAudit>();
     public DbSet<FinancialObligation> FinancialObligations => Set<FinancialObligation>();
+    
+    public DbSet<RawTransaction> RawTransactions => Set<RawTransaction>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<Summary> Summaries => Set<Summary>();
 
@@ -36,6 +40,7 @@ public sealed class ChurchAppDbContext(DbContextOptions<ChurchAppDbContext> opti
         modelBuilder.ApplyConfiguration(new DonationConfiguration());
         modelBuilder.ApplyConfiguration(new DonationAuditConfiguration());
         modelBuilder.ApplyConfiguration(new FinancialObligationConfiguration());
+        modelBuilder.ApplyConfiguration(new RawTransactionConfiguration());
         modelBuilder.ApplyConfiguration(new ReportConfiguration());
         modelBuilder.ApplyConfiguration(new SummaryConfiguration());
 
