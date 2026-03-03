@@ -11,7 +11,13 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Type).HasConversion<int>();
         builder.Property(x => x.Method).HasConversion<int>();
-        builder.Property(x => x.Status).HasConversion<int>().HasDefaultValue(DonationStatus.Active);
+        
+        // Set sentinel value for enum with database default (Anders Hejlsberg's explicit configuration)
+        // This tells EF Core: "Only use DB default when Status is explicitly set to Unspecified"
+        builder.Property(x => x.Status)
+            .HasConversion<int>()
+            .HasDefaultValue(DonationStatus.Active)
+            .HasSentinel(DonationStatus.Unspecified);
         builder.Property(x => x.Amount).HasPrecision(18, 2);
         builder.Property(x => x.IdempotencyKey).HasMaxLength(100);
         builder.Property(x => x.ServiceName).HasMaxLength(200);

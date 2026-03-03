@@ -10,6 +10,7 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
         <PackageReference Include="FastEndpoints" />
         <PackageReference Include="FastEndpoints.Swagger" />
+        <PackageReference Include="Scalar.AspNetCore" />
     </ItemGroup>
 
     <ItemGroup>
@@ -18,3 +19,4 @@
     </ItemGroup>
 
 </Project>
+

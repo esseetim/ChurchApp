@@ -9,6 +9,8 @@
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
     <TrimMode>copyused</TrimMode>
     <NoWarn>$(NoWarn);IL2026;IL2111;IL3050</NoWarn>
+    <!-- Disable JSON reflection check for Blazor JS interop -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
 
   <ItemGroup>
