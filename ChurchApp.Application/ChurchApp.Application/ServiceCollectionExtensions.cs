@@ -1,6 +1,9 @@
 using ChurchApp.Application.Features.Donations;
 using ChurchApp.Application.Features.Summaries;
 using ChurchApp.Application.Features.Obligations;
+using ChurchApp.Application.Features.Transactions;
+using ChurchApp.Application.Features.Transactions.Classification;
+using ChurchApp.Application.Features.Transactions.Repositories;
 using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Infrastructure;
 using ChurchApp.Application.Infrastructure.CompiledModels;
@@ -28,6 +31,15 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDomainEventHandler<DonationCreatedDomainEvent>, DonationCreatedDomainEventHandler>();
         services.AddScoped<IDomainEventHandler<DonationVoidedDomainEvent>, DonationVoidedDomainEventHandler>();
         services.AddScoped<IDomainEventHandler<DonationCreatedDomainEvent>, ObligationFulfillmentHandler>();
+        
+        // Transaction services
+        services.AddScoped<IDonationAccountRepository, DonationAccountRepository>();
+        services.AddScoped<IIntegrationEventHandler<RawTransactionExtractedEvent>, RawTransactionResolverHandler>();
+        
+        // Donation type classifiers (Strategy Pattern)
+        services.AddScoped<IDonationTypeClassifier, TitheClassifier>();
+        services.AddScoped<IDonationTypeClassifier, BuildingFundClassifier>();
+        services.AddScoped<DonationTypeClassificationService>();
 
         return services;
     }
