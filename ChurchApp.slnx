@@ -13,6 +13,10 @@
     <File Path="run-api.sh" />
     <File Path="run-apphost.sh" />
     <File Path="ensure-ef-compiled-model.sh" />
+    <File Path="ensure-database-migrated.ps1"/>
+    <File Path="ensure-database-migrated.sh"/>
+    <File Path="regenerate-compiled-model.ps1"/>
+    <File Path="regenerate-compiled-model.sh"/>
   </Folder>
   <Folder Name="/ChurchApp.Tests/">
     <Project Path="ChurchApp.Tests/ChurchApp.Tests/ChurchApp.Tests.csproj" />

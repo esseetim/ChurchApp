@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ChurchApp.Application.Migrations
+namespace ChurchApp.Application.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class AddDonationDomainEventsAndSummaryFamilySupport : Migration

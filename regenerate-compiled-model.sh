@@ -6,16 +6,18 @@ echo "🔨 Regenerating EF Core Compiled Model..."
 
 cd ChurchApp.Application/ChurchApp.Application
 
+# Remove old compiled models first
+rm -rf Infrastructure/CompiledModels/*
+
 dotnet ef dbcontext optimize \
     --startup-project ../../ChurchApp.API/ChurchApp.API/ChurchApp.API.csproj \
     --context ChurchApp.Application.Infrastructure.ChurchAppDbContext \
     --output-dir Infrastructure/CompiledModels \
-    --namespace ChurchApp.Application.Infrastructure.CompiledModels \
-    --force
+    --namespace ChurchApp.Application.Infrastructure.CompiledModels
 
 if [ $? -eq 0 ]; then
     echo "✅ Compiled model regenerated successfully"
-    echo "📝 Files updated in Infrastructure/CompiledModels/"
+    echo "�� Files updated in Infrastructure/CompiledModels/"
     echo ""
     echo "⚠️  Important: Commit these files to Git"
     echo "    They are part of your application code, not generated at runtime"

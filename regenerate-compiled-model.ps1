@@ -5,12 +5,14 @@ Write-Host "🔨 Regenerating EF Core Compiled Model..." -ForegroundColor Cyan
 
 cd ChurchApp.Application\ChurchApp.Application
 
+# Remove old compiled models first
+Remove-Item "Infrastructure\CompiledModels\*" -Force -ErrorAction SilentlyContinue
+
 dotnet ef dbcontext optimize `
     --startup-project ..\..\ChurchApp.API\ChurchApp.API\ChurchApp.API.csproj `
     --context ChurchApp.Application.Infrastructure.ChurchAppDbContext `
     --output-dir Infrastructure/CompiledModels `
-    --namespace ChurchApp.Application.Infrastructure.CompiledModels `
-    --force
+    --namespace ChurchApp.Application.Infrastructure.CompiledModels
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""

@@ -2,7 +2,6 @@ using ChurchApp.Application.Features.Donations;
 using ChurchApp.Application.Features.Summaries;
 using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Infrastructure;
-using ChurchApp.Application.Infrastructure.CompiledModels; // Anders Hejlsberg's AOT optimization
 using ChurchApp.Application.Infrastructure.DomainEvents;
 using ChurchApp.Application.Infrastructure.Transactions;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +17,7 @@ public static class ServiceCollectionExtensions
         var connectionString = configuration.GetConnectionString("ChurchApp")
             ?? "Host=localhost;Port=5432;Database=churchapp;Username=churchapp;Password=churchapp";
 
-        // Anders Hejlsberg's compiled model optimization
-        // Benefits: 50-70% faster startup, Native AOT compatible, no reflection
-        services.AddDbContext<ChurchAppDbContext>(options => 
-        {
-            options.UseNpgsql(connectionString);
-            options.UseModel(ChurchAppDbContextModel.Instance); // Explicit compiled model
-        });
+        services.AddDbContext<ChurchAppDbContext>(options => options.UseNpgsql(connectionString));
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<ISummaryUpsertService, SummaryUpsertService>();
