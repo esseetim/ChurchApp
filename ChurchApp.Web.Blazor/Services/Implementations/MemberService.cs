@@ -54,6 +54,21 @@ public class MemberService(IHttpClientFactory httpClientFactory) : IMemberServic
             ?? throw new InvalidOperationException("Failed to deserialize response");
     }
 
+    public async Task UpdateMemberAsync(
+        Guid memberId,
+        UpdateMemberRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        using var httpClient = httpClientFactory.CreateClient("ChurchAppApi");
+        var response = await httpClient.PutAsJsonAsync(
+            $"/api/members/{memberId}",
+            request,
+            JsonOptions,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task<MemberDonationAccountsResponse> GetDonationAccountsAsync(
         Guid memberId,
         CancellationToken cancellationToken = default)
@@ -81,6 +96,45 @@ public class MemberService(IHttpClientFactory httpClientFactory) : IMemberServic
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<DonationAccount>(JsonOptions, cancellationToken)
+               ?? throw new InvalidOperationException("Failed to deserialize response");
+    }
+
+    public async Task<DonationAccount> UpdateDonationAccountAsync(
+        Guid memberId,
+        Guid accountId,
+        UpdateDonationAccountRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        using var httpClient = httpClientFactory.CreateClient("ChurchAppApi");
+        var response = await httpClient.PutAsJsonAsync(
+            $"/api/members/{memberId}/accounts/{accountId}",
+            request,
+            JsonOptions,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<DonationAccount>(JsonOptions, cancellationToken)
+               ?? throw new InvalidOperationException("Failed to deserialize response");
+    }
+
+    public async Task DeleteDonationAccountAsync(
+        Guid memberId,
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        using var httpClient = httpClientFactory.CreateClient("ChurchAppApi");
+        using var response = await httpClient.DeleteAsync($"/api/members/{memberId}/accounts/{accountId}", cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<MemberFamiliesResponse> GetMemberFamiliesAsync(Guid memberId, CancellationToken cancellationToken = default)
+    {
+        using var httpClient = httpClientFactory.CreateClient("ChurchAppApi");
+        return await httpClient.GetFromJsonAsync<MemberFamiliesResponse>(
+                   $"/api/members/{memberId}/families",
+                   JsonOptions,
+                   cancellationToken)
                ?? throw new InvalidOperationException("Failed to deserialize response");
     }
 }

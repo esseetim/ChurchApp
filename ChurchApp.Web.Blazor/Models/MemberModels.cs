@@ -29,6 +29,13 @@ public record CreateMemberResponse(
     Guid MemberId
 );
 
+public record UpdateMemberRequest(
+    string FirstName,
+    string LastName,
+    string? Email = null,
+    string? PhoneNumber = null
+);
+
 public record CreateDonationAccountRequest(
     DonationMethod Method,
     string Handle,
@@ -47,4 +54,20 @@ public record DonationAccount(
 public record MemberDonationAccountsResponse(
     Guid MemberId,
     ImmutableArray<DonationAccount> Accounts
+);
+
+public record UpdateDonationAccountRequest(
+    string Handle,
+    string? DisplayName = null,
+    bool IsActive = true
+);
+
+public record MemberFamily(
+    Guid FamilyId,
+    string FamilyName
+);
+
+public record MemberFamiliesResponse(
+    Guid MemberId,
+    ImmutableArray<MemberFamily> Families
 );

@@ -23,6 +23,23 @@ public record CreateFamilyResponse(
     Guid FamilyId
 );
 
+public record UpdateFamilyRequest(
+    string Name
+);
+
 public record AddFamilyMemberRequest(
     Guid MemberId
+);
+
+public record FamilyMember(
+    Guid MemberId,
+    string FirstName,
+    string LastName,
+    string? Email,
+    string? PhoneNumber
+);
+
+public record FamilyMembersResponse(
+    Guid FamilyId,
+    ImmutableArray<FamilyMember> Members
 );

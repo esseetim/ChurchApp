@@ -99,6 +99,12 @@ public sealed record CreateMemberRequest(
 
 public sealed record CreateMemberResponse(Guid MemberId);
 
+public sealed record UpdateMemberRequest(
+    string FirstName,
+    string LastName,
+    string? Email = null,
+    string? PhoneNumber = null);
+
 public sealed record CreateDonationAccountRequest(
     DonationMethod Method,
     string Handle,
@@ -114,6 +120,11 @@ public sealed record DonationAccountDto(
 
 public sealed record MemberDonationAccountsResponse(Guid MemberId, List<DonationAccountDto> Accounts);
 
+public sealed record UpdateDonationAccountRequest(
+    string Handle,
+    string? DisplayName = null,
+    bool IsActive = true);
+
 public sealed record MemberListItemDto(
     Guid Id,
     string FirstName,
@@ -127,6 +138,8 @@ public sealed record GetFamiliesRequest(string? Search = null, int Page = 1, int
 
 public sealed record CreateFamilyRequest(string Name);
 
+public sealed record UpdateFamilyRequest(string Name);
+
 public sealed record CreateFamilyResponse(Guid FamilyId);
 
 public sealed record FamilyListItemDto(Guid Id, string Name, int MemberCount);
@@ -136,3 +149,11 @@ public sealed record FamiliesResponse(int Page, int PageSize, int TotalCount, Li
 public sealed record AddFamilyMemberRequest(Guid MemberId);
 
 public sealed record AddFamilyMemberResponse(Guid FamilyId, Guid MemberId, bool Added);
+
+public sealed record MemberFamilyDto(Guid FamilyId, string FamilyName);
+
+public sealed record MemberFamiliesResponse(Guid MemberId, List<MemberFamilyDto> Families);
+
+public sealed record FamilyMemberDto(Guid MemberId, string FirstName, string LastName, string? Email, string? PhoneNumber);
+
+public sealed record FamilyMembersResponse(Guid FamilyId, List<FamilyMemberDto> Members);

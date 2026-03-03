@@ -1,0 +1,28 @@
+<EditForm Model="@Model" OnValidSubmit="@HandleSaveAsync">
+    <DataAnnotationsValidator />
+
+    <div class="rz-p-2">
+        <div class="rz-mb-3">
+            <label class="rz-label">Family Name *</label>
+            <RadzenTextBox @bind-Value="Model.Name" Style="width:100%" />
+        </div>
+
+        <div class="rz-mb-3">
+            <label class="rz-label">Members</label>
+            <RadzenDropDown @bind-Value="Model.SelectedMemberIds"
+                            Data="@AllMembers"
+                            TextProperty="DisplayName"
+                            ValueProperty="Id"
+                            Multiple="true"
+                            Chips="true"
+                            AllowFiltering="true"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            Style="width:100%" />
+        </div>
+
+        <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+            <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="@Cancel" />
+            <RadzenButton Text="Save Changes" ButtonType="ButtonType.Submit" Icon="save" IsBusy="@IsSaving" />
+        </div>
+    </div>
+</EditForm>

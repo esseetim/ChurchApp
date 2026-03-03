@@ -54,6 +54,21 @@ public class FamilyService(IHttpClientFactory httpClientFactory) : IFamilyServic
             ?? throw new InvalidOperationException("Failed to deserialize response");
     }
 
+    public async Task UpdateFamilyAsync(
+        Guid familyId,
+        UpdateFamilyRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        using var httpClient = httpClientFactory.CreateClient("ChurchAppApi");
+        var response = await httpClient.PutAsJsonAsync(
+            $"/api/families/{familyId}",
+            request,
+            JsonOptions,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task AddFamilyMemberAsync(
         Guid familyId, 
         AddFamilyMemberRequest request, 
@@ -67,5 +82,25 @@ public class FamilyService(IHttpClientFactory httpClientFactory) : IFamilyServic
             cancellationToken);
         
         response.EnsureSuccessStatusCode();
+    }
+
+    public async Task RemoveFamilyMemberAsync(
+        Guid familyId,
+        Guid memberId,
+        CancellationToken cancellationToken = default)
+    {
+        using var httpClient = httpClientFactory.CreateClient("ChurchAppApi");
+        using var response = await httpClient.DeleteAsync($"/api/families/{familyId}/members/{memberId}", cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<FamilyMembersResponse> GetFamilyMembersAsync(Guid familyId, CancellationToken cancellationToken = default)
+    {
+        using var httpClient = httpClientFactory.CreateClient("ChurchAppApi");
+        return await httpClient.GetFromJsonAsync<FamilyMembersResponse>(
+                   $"/api/families/{familyId}/members",
+                   JsonOptions,
+                   cancellationToken)
+               ?? throw new InvalidOperationException("Failed to deserialize response");
     }
 }

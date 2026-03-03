@@ -1,0 +1,51 @@
+@page "/directory"
+
+<h2 class="text-xl font-bold text-slate-900" style="margin-bottom: 1rem;">Directory Hub</h2>
+
+<RadzenTabs>
+    <Tabs>
+        <RadzenTabsItem Text="Members">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
+                <RadzenButton Text="Add New Member" Icon="person_add" Click="@CreateMemberAsync" />
+            </div>
+
+            <RadzenDataGrid Data="@Members"
+                            TItem="Member"
+                            RowSelect="@OpenMemberAsync"
+                            AllowPaging="true"
+                            PageSize="15"
+                            AllowSorting="true">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Member" Title="Name">
+                        <Template Context="member">@member.FirstName @member.LastName</Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Member" Property="Email" Title="Email" />
+                    <RadzenDataGridColumn TItem="Member" Property="PhoneNumber" Title="Phone" />
+                    <RadzenDataGridColumn TItem="Member" Title="Accounts">
+                        <Template Context="member">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="@GetAccountCount(member.Id).ToString()" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenTabsItem>
+
+        <RadzenTabsItem Text="Families">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
+                <RadzenButton Text="Add New Family" Icon="group_add" Click="@CreateFamilyAsync" />
+            </div>
+
+            <RadzenDataGrid Data="@Families"
+                            TItem="Family"
+                            RowSelect="@OpenFamilyAsync"
+                            AllowPaging="true"
+                            PageSize="15"
+                            AllowSorting="true">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Family" Property="Name" Title="Family" />
+                    <RadzenDataGridColumn TItem="Family" Property="MemberCount" Title="Member Count" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>

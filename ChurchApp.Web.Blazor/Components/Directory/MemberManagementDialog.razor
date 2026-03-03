@@ -1,0 +1,93 @@
+<RadzenTabs>
+    <Tabs>
+        <RadzenTabsItem Text="Profile">
+            <EditForm Model="@Profile" OnValidSubmit="@SaveProfileAsync">
+                <DataAnnotationsValidator />
+                <div class="rz-p-2">
+                    <div class="rz-row rz-mb-2">
+                        <div class="rz-col-12 rz-col-md-6">
+                            <label class="rz-label">First Name *</label>
+                            <RadzenTextBox @bind-Value="Profile.FirstName" Style="width:100%" />
+                        </div>
+                        <div class="rz-col-12 rz-col-md-6">
+                            <label class="rz-label">Last Name *</label>
+                            <RadzenTextBox @bind-Value="Profile.LastName" Style="width:100%" />
+                        </div>
+                    </div>
+                    <div class="rz-row rz-mb-2">
+                        <div class="rz-col-12 rz-col-md-6">
+                            <label class="rz-label">Email</label>
+                            <RadzenTextBox @bind-Value="Profile.Email" Style="width:100%" />
+                        </div>
+                        <div class="rz-col-12 rz-col-md-6">
+                            <label class="rz-label">Phone</label>
+                            <RadzenTextBox @bind-Value="Profile.PhoneNumber" Style="width:100%" />
+                        </div>
+                    </div>
+                    <RadzenButton Text="Save Profile" Icon="save" ButtonType="ButtonType.Submit" IsBusy="@IsSavingProfile" />
+                </div>
+            </EditForm>
+        </RadzenTabsItem>
+
+        <RadzenTabsItem Text="Donation Accounts">
+            <div class="rz-p-2">
+                <div class="rz-row rz-mb-2">
+                    <div class="rz-col-12 rz-col-md-3">
+                        <RadzenDropDown @bind-Value="NewAccount.Method"
+                                        Data="@DonationAccountMethods"
+                                        TextProperty="Value"
+                                        ValueProperty="Key"
+                                        Style="width:100%" />
+                    </div>
+                    <div class="rz-col-12 rz-col-md-4">
+                        <RadzenTextBox @bind-Value="NewAccount.Handle" Placeholder="Handle" Style="width:100%" />
+                    </div>
+                    <div class="rz-col-12 rz-col-md-4">
+                        <RadzenTextBox @bind-Value="NewAccount.DisplayName" Placeholder="Display Name" Style="width:100%" />
+                    </div>
+                    <div class="rz-col-12 rz-col-md-1">
+                        <RadzenButton Icon="add" Click="@CreateAccountAsync" />
+                    </div>
+                </div>
+
+                <RadzenDataGrid Data="@Accounts" TItem="DonationAccount" AllowPaging="true" PageSize="8">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="DonationAccount" Property="Method" Title="Method" />
+                        <RadzenDataGridColumn TItem="DonationAccount" Title="Handle">
+                            <Template Context="account">
+                                <RadzenTextBox @bind-Value="EditableHandles[account.Id]" Style="width:100%" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="DonationAccount" Title="Display Name">
+                            <Template Context="account">
+                                <RadzenTextBox @bind-Value="EditableDisplayNames[account.Id]" Style="width:100%" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="DonationAccount" Title="Actions">
+                            <Template Context="account">
+                                <div style="display:flex;gap:0.25rem;">
+                                    <RadzenButton Icon="save" Size="ButtonSize.Small" Click="@(() => UpdateAccountAsync(account))" />
+                                    <RadzenButton Icon="delete" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" Click="@(() => DeleteAccountAsync(account))" />
+                                </div>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </div>
+        </RadzenTabsItem>
+
+        <RadzenTabsItem Text="Family Ties">
+            <div class="rz-p-2">
+                <RadzenDataList Data="@MemberFamilies" TItem="MemberFamily">
+                    <Template Context="family">
+                        <div class="rz-p-2">@family.FamilyName</div>
+                    </Template>
+                </RadzenDataList>
+            </div>
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
+
+<div style="display:flex;justify-content:flex-end;margin-top:0.75rem;">
+    <RadzenButton Text="Close" ButtonStyle="ButtonStyle.Light" Click="@CloseDialog" />
+</div>
