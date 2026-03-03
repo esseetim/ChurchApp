@@ -21,9 +21,30 @@ public record CreateMemberRequest(
     string FirstName,
     string LastName,
     string? Email = null,
-    string? PhoneNumber = null
+    string? PhoneNumber = null,
+    IReadOnlyList<CreateDonationAccountRequest>? DonationAccounts = null
 );
 
 public record CreateMemberResponse(
     Guid MemberId
+);
+
+public record CreateDonationAccountRequest(
+    DonationMethod Method,
+    string Handle,
+    string? DisplayName = null
+);
+
+public record DonationAccount(
+    Guid Id,
+    Guid MemberId,
+    DonationMethod Method,
+    string Handle,
+    string? DisplayName,
+    bool IsActive
+);
+
+public record MemberDonationAccountsResponse(
+    Guid MemberId,
+    ImmutableArray<DonationAccount> Accounts
 );

@@ -1,42 +1,40 @@
 using System.Collections.Frozen;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using ChurchApp.Web.Blazor.Components.Dialogs;
 using ChurchApp.Web.Blazor.Models;
 using ChurchApp.Web.Blazor.Services;
 using Radzen;
-using System.ComponentModel.DataAnnotations;
+using Radzen.Blazor;
 
 namespace ChurchApp.Web.Blazor.Pages;
 
 public partial class DonationDesk : ComponentBase
 {
-    [Inject]
-    private IDonationService DonationService { get; set; } = null!;
-
-    [Inject]
-    private IMemberService MemberService { get; set; } = null!;
-
-    [Inject]
-    private IFamilyService FamilyService { get; set; } = null!;
-
-    [Inject]
-    private NotificationService NotificationService { get; set; } = null!;
+    [Inject] private IDonationService DonationService { get; set; } = null!;
+    [Inject] private IMemberService MemberService { get; set; } = null!;
+    [Inject] private IFamilyService FamilyService { get; set; } = null!;
+    [Inject] private NotificationService NotificationService { get; set; } = null!;
+    [Inject] private DialogService DialogService { get; set; } = null!;
 
     private List<MemberDisplay> _members = [];
     private List<Family> _families = [];
+    private List<DonationAccountDisplay> _availableDonationAccounts = [];
     private DonationFormModel _donationModel = new();
+    private RadzenDropDown<Guid?>? _memberDropDown;
     private bool IsSubmittingDonation { get; set; }
 
     private readonly FrozenDictionary<DonationType, string> _donationTypes = FrozenDictionary.Create(
-        new KeyValuePair<DonationType, string>(DonationType.GeneralOffering, "General Offering"), 
-        new KeyValuePair<DonationType, string>(DonationType.Tithe, "Tithe"), 
+        new KeyValuePair<DonationType, string>(DonationType.GeneralOffering, "General Offering"),
+        new KeyValuePair<DonationType, string>(DonationType.Tithe, "Tithe"),
         new KeyValuePair<DonationType, string>(DonationType.BuildingFund, "Building Fund"));
 
     private readonly FrozenDictionary<DonationMethod, string> _donationMethods = FrozenDictionary.Create(
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Cash, "Cash"), 
-        new KeyValuePair<DonationMethod, string>(DonationMethod.CashApp, "CashApp"), 
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Zelle, "Zelle"), 
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Check, "Check"), 
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Card, "Card"), 
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Cash, "Cash"),
+        new KeyValuePair<DonationMethod, string>(DonationMethod.CashApp, "CashApp"),
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Zelle, "Zelle"),
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Check, "Check"),
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Card, "Card"),
         new KeyValuePair<DonationMethod, string>(DonationMethod.Other, "Other"));
 
     protected override async Task OnInitializedAsync() => await LoadLookupData();
@@ -45,20 +43,15 @@ public partial class DonationDesk : ComponentBase
     {
         try
         {
-            var membersTask = MemberService.GetMembersAsync(page: 1, pageSize: 200);
-            var familiesTask = FamilyService.GetFamiliesAsync(page: 1, pageSize: 200);
-
+            var membersTask = MemberService.GetMembersAsync(page: 1, pageSize: 500);
+            var familiesTask = FamilyService.GetFamiliesAsync(page: 1, pageSize: 500);
             await Task.WhenAll(membersTask, familiesTask);
 
             var memberResponse = await membersTask;
             var familyResponse = await familiesTask;
 
             _members = memberResponse.Members
-                .Select(m => new MemberDisplay
-                {
-                    Id = m.Id,
-                    DisplayName = $"{m.FirstName} {m.LastName}"
-                })
+                .Select(m => new MemberDisplay(m.Id, $"{m.FirstName} {m.LastName}"))
                 .ToList();
 
             _families = familyResponse.Families.ToList();
@@ -69,17 +62,76 @@ public partial class DonationDesk : ComponentBase
         }
     }
 
-    public async Task OnMemberCreatedHandler(CreateMemberResponse response)
+    private async Task OpenCreateMemberDialogAsync()
     {
-        await LoadLookupData();
-        _donationModel.MemberId = response.MemberId;
+        var result = await DialogService.OpenAsync<MemberFormDialog>(
+            "Add Member",
+            options: new DialogOptions { Width = "900px", Height = "650px", Resizable = true, Draggable = true });
+
+        if (result is CreateMemberResponse response)
+        {
+            await LoadLookupData();
+            _donationModel.MemberId = response.MemberId;
+            await OnMemberChangedAsync();
+        }
     }
 
-    public async Task OnFamilyCreatedHandler(CreateFamilyResponse response)
+    private async Task OpenCreateFamilyDialogAsync()
     {
-        await LoadLookupData();
-        _donationModel.FamilyId = response.FamilyId;
+        var result = await DialogService.OpenAsync<FamilyFormDialog>(
+            "Add Family",
+            options: new DialogOptions { Width = "700px", Height = "560px", Resizable = true, Draggable = true });
+
+        if (result is CreateFamilyResponse response)
+        {
+            await LoadLookupData();
+            _donationModel.FamilyId = response.FamilyId;
+        }
     }
+
+    private async Task OnMemberChangedAsync()
+    {
+        await LoadDonationAccountsAsync();
+    }
+
+    private async Task OnMethodChangedAsync()
+    {
+        await LoadDonationAccountsAsync();
+    }
+
+    private async Task LoadDonationAccountsAsync()
+    {
+        _availableDonationAccounts.Clear();
+        _donationModel.DonationAccountId = null;
+
+        if (!_donationModel.MemberId.HasValue || !RequiresDonationAccount(_donationModel.Method))
+        {
+            return;
+        }
+
+        try
+        {
+            var response = await MemberService.GetDonationAccountsAsync(_donationModel.MemberId.Value);
+            _availableDonationAccounts = response.Accounts
+                .Where(x => x.Method == _donationModel.Method && x.IsActive)
+                .Select(x => new DonationAccountDisplay(
+                    x.Id,
+                    x.Method,
+                    string.IsNullOrWhiteSpace(x.DisplayName) ? x.Handle : $"{x.DisplayName} ({x.Handle})"))
+                .ToList();
+
+            if (_availableDonationAccounts.Count == 1)
+            {
+                _donationModel.DonationAccountId = _availableDonationAccounts[0].Id;
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Failed to load donation accounts: {ex.Message}");
+        }
+    }
+
+    private static bool RequiresDonationAccount(DonationMethod method) => method != DonationMethod.Cash;
 
     private async Task HandleDonationSubmit()
     {
@@ -89,12 +141,18 @@ public partial class DonationDesk : ComponentBase
             return;
         }
 
+        if (RequiresDonationAccount(_donationModel.Method) && !_donationModel.DonationAccountId.HasValue)
+        {
+            ShowWarning("Please select a donation account for the selected method.");
+            return;
+        }
+
         IsSubmittingDonation = true;
         try
         {
             var request = new CreateDonationRequest(
                 MemberId: _donationModel.MemberId.Value,
-                DonationAccountId: null,
+                DonationAccountId: _donationModel.DonationAccountId,
                 Type: _donationModel.Type,
                 Method: _donationModel.Method,
                 DonationDate: _donationModel.DonationDate.ToString("yyyy-MM-dd"),
@@ -102,22 +160,28 @@ public partial class DonationDesk : ComponentBase
                 IdempotencyKey: Guid.NewGuid().ToString(),
                 EnteredBy: string.IsNullOrWhiteSpace(_donationModel.EnteredBy) ? "volunteer" : _donationModel.EnteredBy,
                 ServiceName: string.IsNullOrWhiteSpace(_donationModel.ServiceName) ? null : _donationModel.ServiceName,
-                Notes: string.IsNullOrWhiteSpace(_donationModel.Notes) ? null : _donationModel.Notes
-            );
+                Notes: string.IsNullOrWhiteSpace(_donationModel.Notes) ? null : _donationModel.Notes);
 
-            var response = await DonationService.CreateDonationAsync(request);
-
+            await DonationService.CreateDonationAsync(request);
             ShowSuccess($"Donation recorded: ${_donationModel.Amount:F2}");
 
-            // Reset form
+            var stickyDate = _donationModel.DonationDate;
+            var stickyServiceName = _donationModel.ServiceName;
+            var stickyEnteredBy = _donationModel.EnteredBy;
+            var stickyMethod = _donationModel.Method;
+            var stickyType = _donationModel.Type;
+
             _donationModel = new DonationFormModel
             {
-                DonationDate = DateTime.Today,
-                Type = DonationType.GeneralOffering,
-                Method = DonationMethod.Cash,
-                ServiceName = "Sunday Service",
-                EnteredBy = "volunteer"
+                DonationDate = stickyDate,
+                Type = stickyType,
+                Method = stickyMethod,
+                ServiceName = stickyServiceName,
+                EnteredBy = stickyEnteredBy
             };
+
+            _availableDonationAccounts.Clear();
+            await _memberDropDown!.FocusAsync();
         }
         catch (Exception ex)
         {
@@ -132,13 +196,14 @@ public partial class DonationDesk : ComponentBase
     private async Task LinkMemberToFamily()
     {
         if (!_donationModel.MemberId.HasValue || !_donationModel.FamilyId.HasValue)
+        {
             return;
+        }
 
         try
         {
             var request = new AddFamilyMemberRequest(_donationModel.MemberId.Value);
             await FamilyService.AddFamilyMemberAsync(_donationModel.FamilyId.Value, request);
-
             ShowSuccess("Member linked to family");
             await LoadLookupData();
         }
@@ -148,7 +213,6 @@ public partial class DonationDesk : ComponentBase
         }
     }
 
-    // Notification helpers following DRY principle
     private void ShowSuccess(string message) =>
         NotificationService.Notify(new NotificationMessage
         {
@@ -176,25 +240,23 @@ public partial class DonationDesk : ComponentBase
             Duration = 4000
         });
 
-    // View models - keep internal to the page
-    private class MemberDisplay
-    {
-        public Guid Id { get; set; }
-        public string DisplayName { get; set; } = string.Empty;
-    }
+    private sealed record MemberDisplay(Guid Id, string DisplayName);
 
-    private class DonationFormModel
+    private sealed record DonationAccountDisplay(Guid Id, DonationMethod Method, string DisplayName);
+
+    private sealed class DonationFormModel
     {
         public Guid? MemberId { get; set; }
         public Guid? FamilyId { get; set; }
+        public Guid? DonationAccountId { get; set; }
         public DonationType Type { get; set; } = DonationType.GeneralOffering;
         public DonationMethod Method { get; set; } = DonationMethod.Cash;
         public DateTime DonationDate { get; set; } = DateTime.Today;
-        
+
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
-        public decimal Amount { get; set; } = 0;
-        
+        public decimal Amount { get; set; }
+
         public string ServiceName { get; set; } = "Sunday Service";
         public string EnteredBy { get; set; } = "volunteer";
         public string? Notes { get; set; }

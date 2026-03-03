@@ -2,138 +2,169 @@
 
 <h2 class="text-xl font-bold text-slate-900" style="margin-bottom: 1.5rem;">Donation Desk</h2>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-    <QuickCreateMember OnMemberCreated="@OnMemberCreatedHandler" />
-    <QuickCreateFamily OnFamilyCreated="@OnFamilyCreatedHandler" />
-</div>
-
 <RadzenCard>
     <h3 class="text-sm font-semibold text-slate-900" style="margin-bottom: 0.75rem;">Record Donation</h3>
-    
+
     <EditForm Model="@_donationModel" OnValidSubmit="@HandleDonationSubmit">
         <DataAnnotationsValidator />
-        
+
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.75rem;">
-            <!-- Member Selection -->
             <div>
-                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Member *</label>
-                <RadzenDropDown @bind-Value="@_donationModel.MemberId"
-                              Data="@_members"
-                              TextProperty="DisplayName"
-                              ValueProperty="Id"
-                              Placeholder="Select member"
-                              AllowFiltering="true"
-                              FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                              Style="width: 100%;"
-                              Disabled="@IsSubmittingDonation" />
+                <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Member *</label>
+                <div style="display:flex;gap:0.5rem;">
+                    <RadzenDropDown @ref="_memberDropDown"
+                                    @bind-Value="@_donationModel.MemberId"
+                                    Data="@_members"
+                                    TextProperty="DisplayName"
+                                    ValueProperty="Id"
+                                    Placeholder="Select member"
+                                    AllowFiltering="true"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Style="width:100%;"
+                                    Change="@(_ => OnMemberChangedAsync())"
+                                    Disabled="@IsSubmittingDonation"
+                                    TabIndex="1" />
+                    <RadzenButton Icon="add"
+                                  ButtonStyle="ButtonStyle.Secondary"
+                                  Variant="Variant.Flat"
+                                  Click="@OpenCreateMemberDialogAsync"
+                                  Disabled="@IsSubmittingDonation"
+                                  TabIndex="2" />
+                </div>
                 <ValidationMessage For="@(() => _donationModel.MemberId)" />
             </div>
 
-            <!-- Family Selection -->
             <div>
-                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Family (optional)</label>
-                <RadzenDropDown @bind-Value="@_donationModel.FamilyId"
-                              Data="@_families"
-                              TextProperty="Name"
-                              ValueProperty="Id"
-                              Placeholder="Select family"
-                              AllowClear="true"
-                              AllowFiltering="true"
-                              FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                              Style="width: 100%;"
-                              Disabled="@IsSubmittingDonation" />
+                <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Family (optional)</label>
+                <div style="display:flex;gap:0.5rem;">
+                    <RadzenDropDown @bind-Value="@_donationModel.FamilyId"
+                                    Data="@_families"
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    Placeholder="Select family"
+                                    AllowClear="true"
+                                    AllowFiltering="true"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Style="width:100%;"
+                                    Disabled="@IsSubmittingDonation"
+                                    TabIndex="3" />
+                    <RadzenButton Icon="add"
+                                  ButtonStyle="ButtonStyle.Secondary"
+                                  Variant="Variant.Flat"
+                                  Click="@OpenCreateFamilyDialogAsync"
+                                  Disabled="@IsSubmittingDonation"
+                                  TabIndex="4" />
+                </div>
             </div>
 
-            <!-- Donation Type -->
             <div>
-                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Type</label>
+                <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Type</label>
                 <RadzenDropDown @bind-Value="@_donationModel.Type"
-                              Data="@_donationTypes.Values"
-                              Style="width: 100%;"
-                              Disabled="@IsSubmittingDonation" />
+                                Data="@_donationTypes.Values"
+                                Style="width:100%;"
+                                Disabled="@IsSubmittingDonation"
+                                TabIndex="5" />
             </div>
 
-            <!-- Donation Method -->
             <div>
-                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Method</label>
+                <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Method</label>
                 <RadzenDropDown @bind-Value="@_donationModel.Method"
-                              Data="@_donationMethods.Values"
-                              Style="width: 100%;"
-                              Disabled="@IsSubmittingDonation" />
+                                Data="@_donationMethods.Values"
+                                Style="width:100%;"
+                                Change="@(_ => OnMethodChangedAsync())"
+                                Disabled="@IsSubmittingDonation"
+                                TabIndex="6" />
             </div>
 
-            <!-- Donation Date -->
+            @if (RequiresDonationAccount(_donationModel.Method))
+            {
+                <div>
+                    <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Donation Account *</label>
+                    <RadzenDropDown @bind-Value="@_donationModel.DonationAccountId"
+                                    Data="@_availableDonationAccounts"
+                                    TextProperty="DisplayName"
+                                    ValueProperty="Id"
+                                    Placeholder="Select account"
+                                    Style="width:100%;"
+                                    Disabled="@(!_donationModel.MemberId.HasValue || IsSubmittingDonation)"
+                                    TabIndex="7" />
+                </div>
+            }
+
             <div>
-                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Date</label>
+                <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Date</label>
                 <RadzenDatePicker @bind-Value="@_donationModel.DonationDate"
-                                DateFormat="yyyy-MM-dd"
-                                Style="width: 100%;"
-                                Disabled="@IsSubmittingDonation" />
+                                  DateFormat="yyyy-MM-dd"
+                                  Style="width:100%;"
+                                  Disabled="@IsSubmittingDonation"
+                                  TabIndex="8" />
             </div>
 
-            <!-- Amount -->
             <div>
-                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Amount *</label>
+                <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Amount *</label>
                 <RadzenNumeric @bind-Value="@_donationModel.Amount"
-                             Min="0.01m"
-                             Step="0.01m"
-                             Format="c"
-                             Style="width: 100%;"
-                             Disabled="@IsSubmittingDonation" />
+                               Min="0.01m"
+                               Step="0.01m"
+                               Format="c"
+                               Style="width:100%;"
+                               Disabled="@IsSubmittingDonation"
+                               TabIndex="9" />
                 <ValidationMessage For="@(() => _donationModel.Amount)" />
             </div>
 
-            <!-- Service Name -->
             <div>
-                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Service Name</label>
+                <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Service Name</label>
                 <RadzenTextBox @bind-Value="@_donationModel.ServiceName"
-                             Placeholder="Sunday Service"
-                             Style="width: 100%;"
-                             Disabled="@IsSubmittingDonation" />
+                               Placeholder="Sunday Service"
+                               Style="width:100%;"
+                               Disabled="@IsSubmittingDonation"
+                               TabIndex="10" />
             </div>
 
-            <!-- Entered By -->
             <div>
-                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Entered By</label>
+                <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Entered By</label>
                 <RadzenTextBox @bind-Value="@_donationModel.EnteredBy"
-                             Placeholder="volunteer"
-                             Style="width: 100%;"
-                             Disabled="@IsSubmittingDonation" />
+                               Placeholder="volunteer"
+                               Style="width:100%;"
+                               Disabled="@IsSubmittingDonation"
+                               TabIndex="11" />
             </div>
         </div>
 
-        <!-- Notes -->
-        <div style="margin-bottom: 0.75rem;">
-            <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Notes (optional)</label>
+        <div style="margin-bottom:0.75rem;">
+            <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Notes (optional)</label>
             <RadzenTextArea @bind-Value="@_donationModel.Notes"
-                          Placeholder="Additional notes"
-                          Rows="3"
-                          Style="width: 100%;"
-                          Disabled="@IsSubmittingDonation" />
+                            Placeholder="Additional notes"
+                            Rows="3"
+                            Style="width:100%;"
+                            Disabled="@IsSubmittingDonation"
+                            TabIndex="12" />
         </div>
 
-        <!-- Action Buttons -->
-        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
             <RadzenButton ButtonType="ButtonType.Submit"
-                        ButtonStyle="ButtonStyle.Primary"
-                        Text="Record Donation"
-                        Icon="@(IsSubmittingDonation ? "autorenew" : "add_circle")"
-                        IsBusy="@IsSubmittingDonation"
-                        Disabled="@IsSubmittingDonation" />
-            
+                          ButtonStyle="ButtonStyle.Primary"
+                          Text="Record Donation"
+                          Icon="@(IsSubmittingDonation ? "autorenew" : "add_circle")"
+                          IsBusy="@IsSubmittingDonation"
+                          Disabled="@IsSubmittingDonation"
+                          TabIndex="13" />
+
             <RadzenButton ButtonType="ButtonType.Button"
-                        ButtonStyle="ButtonStyle.Secondary"
-                        Text="Link Member to Family"
-                        Icon="link"
-                        Click="@LinkMemberToFamily"
-                        Disabled="@(IsSubmittingDonation || !_donationModel.MemberId.HasValue || !_donationModel.FamilyId.HasValue)" />
-            
+                          ButtonStyle="ButtonStyle.Secondary"
+                          Text="Link Member to Family"
+                          Icon="link"
+                          Click="@LinkMemberToFamily"
+                          Disabled="@(IsSubmittingDonation || !_donationModel.MemberId.HasValue || !_donationModel.FamilyId.HasValue)"
+                          TabIndex="14" />
+
             <RadzenButton ButtonType="ButtonType.Button"
-                        ButtonStyle="ButtonStyle.Light"
-                        Text="Refresh Data"
-                        Icon="refresh"
-                        Click="@LoadLookupData"
-                        Disabled="@IsSubmittingDonation" />
+                          ButtonStyle="ButtonStyle.Light"
+                          Text="Refresh Data"
+                          Icon="refresh"
+                          Click="@LoadLookupData"
+                          Disabled="@IsSubmittingDonation"
+                          TabIndex="15" />
         </div>
     </EditForm>
 </RadzenCard>

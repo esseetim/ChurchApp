@@ -1,73 +1,36 @@
-.app-container {
-    max-width: 72rem;
-    margin: 0 auto;
-    padding: 1rem 1.5rem;
+.app-shell {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
 }
 
 .app-header {
-    margin-bottom: 1.5rem;
-    border-radius: 1rem;
-    border: 1px solid var(--blue-200);
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 1.25rem;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 0.75rem 1rem;
 }
 
-.header-content {
-    /* No additional styling needed, using utility classes */
-}
-
-.app-nav {
-    margin-bottom: 1.5rem;
+.app-header-content {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    border-radius: 0.75rem;
-    border: 1px solid var(--blue-100);
-    background-color: white;
-    padding: 0.5rem;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    align-items: center;
+    justify-content: space-between;
 }
 
-.nav-link {
-    border-radius: 0.5rem;
-    padding: 0.5rem 0.75rem;
+.app-title {
+    color: #1d4ed8;
     font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.app-subtitle {
+    color: #0f172a;
+    font-size: 1rem;
     font-weight: 600;
-    transition: all 0.2s;
-    color: var(--blue-900);
-    text-decoration: none;
 }
 
-.nav-link:hover {
-    background-color: var(--blue-100);
+.profile-icon {
+    color: #334155;
+    font-size: 1.5rem;
 }
 
-.nav-link-active {
-    background-color: var(--blue-600);
-    color: white;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-}
-
-.app-main {
-    border-radius: 1rem;
-    border: 1px solid var(--blue-100);
-    background-color: white;
-    padding: 1rem 1.5rem;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    flex: 1;
-}
-
-@media (max-width: 640px) {
-    .app-container {
-        padding: 1rem;
-    }
-    
-    .app-main {
-        padding: 1rem;
-    }
+.app-body {
+    padding: 1rem;
 }

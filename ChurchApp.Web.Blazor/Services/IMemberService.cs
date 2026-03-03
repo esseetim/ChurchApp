@@ -6,4 +6,6 @@ public interface IMemberService
 {
     Task<MembersResponse> GetMembersAsync(string? search = null, int page = 1, int pageSize = 200, CancellationToken cancellationToken = default);
     Task<CreateMemberResponse> CreateMemberAsync(CreateMemberRequest request, CancellationToken cancellationToken = default);
+    Task<MemberDonationAccountsResponse> GetDonationAccountsAsync(Guid memberId, CancellationToken cancellationToken = default);
+    Task<DonationAccount> CreateDonationAccountAsync(Guid memberId, CreateDonationAccountRequest request, CancellationToken cancellationToken = default);
 }

@@ -1,0 +1,70 @@
+<EditForm Model="@Model" OnValidSubmit="@HandleSubmitAsync">
+    <DataAnnotationsValidator />
+
+    <div class="rz-p-2">
+        <div class="rz-row rz-mb-2">
+            <div class="rz-col-12 rz-col-md-6">
+                <label class="rz-label">First Name *</label>
+                <RadzenTextBox @bind-Value="Model.FirstName" Name="FirstName" Style="width:100%" TabIndex="1" />
+                <ValidationMessage For="@(() => Model.FirstName)" />
+            </div>
+            <div class="rz-col-12 rz-col-md-6">
+                <label class="rz-label">Last Name *</label>
+                <RadzenTextBox @bind-Value="Model.LastName" Name="LastName" Style="width:100%" TabIndex="2" />
+                <ValidationMessage For="@(() => Model.LastName)" />
+            </div>
+        </div>
+
+        <div class="rz-row rz-mb-2">
+            <div class="rz-col-12 rz-col-md-6">
+                <label class="rz-label">Email</label>
+                <RadzenTextBox @bind-Value="Model.Email" Name="Email" Style="width:100%" TabIndex="3" />
+            </div>
+            <div class="rz-col-12 rz-col-md-6">
+                <label class="rz-label">Phone Number</label>
+                <RadzenTextBox @bind-Value="Model.PhoneNumber" Name="PhoneNumber" Style="width:100%" TabIndex="4" />
+            </div>
+        </div>
+
+        <div class="rz-mt-4 rz-mb-2">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <h4 class="rz-m-0">Donation Accounts (optional)</h4>
+                <RadzenButton Text="Add Account" Icon="add" ButtonStyle="ButtonStyle.Light" Click="@AddAccountRow" TabIndex="5" />
+            </div>
+        </div>
+
+        @for (var index = 0; index < Model.DonationAccounts.Count; index++)
+        {
+            var account = Model.DonationAccounts[index];
+            <div class="rz-row rz-mb-2">
+                <div class="rz-col-12 rz-col-md-3">
+                    <label class="rz-label">Method</label>
+                    <RadzenDropDown @bind-Value="account.Method"
+                                    Data="@DonationAccountMethods"
+                                    TextProperty="Value"
+                                    ValueProperty="Key"
+                                    Style="width:100%" />
+                </div>
+                <div class="rz-col-12 rz-col-md-4">
+                    <label class="rz-label">Handle</label>
+                    <RadzenTextBox @bind-Value="account.Handle" Style="width:100%" />
+                </div>
+                <div class="rz-col-12 rz-col-md-4">
+                    <label class="rz-label">Display Name</label>
+                    <RadzenTextBox @bind-Value="account.DisplayName" Style="width:100%" />
+                </div>
+                <div class="rz-col-12 rz-col-md-1" style="display:flex;align-items:flex-end;">
+                    <RadzenButton Icon="delete"
+                                  ButtonStyle="ButtonStyle.Danger"
+                                  Variant="Variant.Flat"
+                                  Click="@(() => RemoveAccountRow(index))" />
+                </div>
+            </div>
+        }
+
+        <div style="display:flex;gap:0.5rem;justify-content:flex-end;" class="rz-mt-4">
+            <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="@Cancel" TabIndex="90" />
+            <RadzenButton Text="Save Member" ButtonType="ButtonType.Submit" Icon="save" IsBusy="@IsSubmitting" TabIndex="91" />
+        </div>
+    </div>
+</EditForm>

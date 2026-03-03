@@ -1,4 +1,5 @@
 using ChurchApp.API.Endpoints.Contracts;
+using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Members;
 using ChurchApp.Application.Infrastructure;
 using FastEndpoints;
@@ -45,7 +46,54 @@ public sealed class CreateMemberEndpoint(ChurchAppDbContext dbContext)
             PhoneNumber = string.IsNullOrWhiteSpace(req.PhoneNumber) ? null : req.PhoneNumber.Trim()
         };
 
+        var donationAccounts = new List<DonationAccount>();
+        if (req.DonationAccounts is not null)
+        {
+            foreach (var accountRequest in req.DonationAccounts)
+            {
+                if (string.IsNullOrWhiteSpace(accountRequest.Handle))
+                {
+                    AddError("Donation account handle is required.");
+                    await SendErrorsAsync(cancellation: ct);
+                    return;
+                }
+
+                if (accountRequest.Method == DonationMethod.Cash)
+                {
+                    AddError("Cash is not a valid donation account method.");
+                    await SendErrorsAsync(cancellation: ct);
+                    return;
+                }
+
+                var normalizedHandle = accountRequest.Handle.Trim();
+                var methodHandleExists = await dbContext.DonationAccounts.AnyAsync(
+                    x => x.Method == accountRequest.Method && x.Handle == normalizedHandle,
+                    ct);
+
+                if (methodHandleExists)
+                {
+                    AddError($"Donation account already exists for method '{accountRequest.Method}' and handle '{normalizedHandle}'.");
+                    await SendErrorsAsync(cancellation: ct);
+                    return;
+                }
+
+                donationAccounts.Add(new DonationAccount
+                {
+                    Id = Guid.NewGuid(),
+                    MemberId = member.Id,
+                    Method = accountRequest.Method,
+                    Handle = normalizedHandle,
+                    DisplayName = string.IsNullOrWhiteSpace(accountRequest.DisplayName) ? null : accountRequest.DisplayName.Trim(),
+                    IsActive = true
+                });
+            }
+        }
+
         dbContext.Members.Add(member);
+        if (donationAccounts.Count > 0)
+        {
+            dbContext.DonationAccounts.AddRange(donationAccounts);
+        }
         await dbContext.SaveChangesAsync(ct);
 
         await SendAsync(new CreateMemberResponse(member.Id), 201, ct);

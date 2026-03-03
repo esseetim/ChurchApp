@@ -4,35 +4,27 @@
 <RadzenDialog />
 <RadzenNotification />
 
-<div class="app-container">
-    <header class="app-header">
-        <div class="header-content">
-            <p class="text-sm font-semibold tracking-wide text-blue-700">ChurchApp</p>
-            <h1 class="mt-1 text-2xl font-bold text-slate-900">Volunteer Donations Desk</h1>
-            <p class="mt-2 text-sm text-slate-600">Simple workflow for recording donations and generating summaries.</p>
+<RadzenLayout class="app-shell">
+    <RadzenHeader class="app-header">
+        <div class="app-header-content">
+            <div>
+                <div class="app-title">ChurchApp</div>
+                <div class="app-subtitle">Volunteer Donations Desk</div>
+            </div>
+            <RadzenIcon Icon="account_circle" class="profile-icon" />
         </div>
-    </header>
+    </RadzenHeader>
 
-    <nav class="app-nav">
-        <NavLink href="/desk" class="nav-link" ActiveClass="nav-link-active" Match="NavLinkMatch.All">
-            Donation Desk
-        </NavLink>
-        <NavLink href="/ledger" class="nav-link" ActiveClass="nav-link-active">
-            Ledger
-        </NavLink>
-        <NavLink href="/summaries" class="nav-link" ActiveClass="nav-link-active">
-            Summaries
-        </NavLink>
-        <NavLink href="/reports" class="nav-link" ActiveClass="nav-link-active">
-            Reports
-        </NavLink>
-    </nav>
+    <RadzenSidebar>
+        <RadzenPanelMenu ShowArrow="false">
+            <RadzenPanelMenuItem Text="Donation Desk" Icon="point_of_sale" Path="/desk" />
+            <RadzenPanelMenuItem Text="Ledger" Icon="receipt_long" Path="/ledger" />
+            <RadzenPanelMenuItem Text="Summaries" Icon="analytics" Path="/summaries" />
+            <RadzenPanelMenuItem Text="Reports" Icon="insights" Path="/reports" />
+        </RadzenPanelMenu>
+    </RadzenSidebar>
 
-    <main class="app-main">
+    <RadzenBody class="app-body">
         @Body
-    </main>
-</div>
-
-@code {
-    
-}
+    </RadzenBody>
+</RadzenLayout>

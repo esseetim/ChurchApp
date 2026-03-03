@@ -94,9 +94,25 @@ public sealed record CreateMemberRequest(
     string FirstName,
     string LastName,
     string? Email = null,
-    string? PhoneNumber = null);
+    string? PhoneNumber = null,
+    List<CreateDonationAccountRequest>? DonationAccounts = null);
 
 public sealed record CreateMemberResponse(Guid MemberId);
+
+public sealed record CreateDonationAccountRequest(
+    DonationMethod Method,
+    string Handle,
+    string? DisplayName = null);
+
+public sealed record DonationAccountDto(
+    Guid Id,
+    Guid MemberId,
+    DonationMethod Method,
+    string Handle,
+    string? DisplayName,
+    bool IsActive);
+
+public sealed record MemberDonationAccountsResponse(Guid MemberId, List<DonationAccountDto> Accounts);
 
 public sealed record MemberListItemDto(
     Guid Id,

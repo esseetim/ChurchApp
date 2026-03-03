@@ -1,0 +1,31 @@
+<EditForm Model="@Model" OnValidSubmit="@HandleSubmitAsync">
+    <DataAnnotationsValidator />
+
+    <div class="rz-p-2">
+        <div class="rz-mb-3">
+            <label class="rz-label">Family Name *</label>
+            <RadzenTextBox @bind-Value="Model.Name" Name="FamilyName" Style="width:100%" TabIndex="1" />
+            <ValidationMessage For="@(() => Model.Name)" />
+        </div>
+
+        <div class="rz-mb-3">
+            <label class="rz-label">Assign Members (optional)</label>
+            <RadzenDropDown @bind-Value="Model.SelectedMemberIds"
+                            Data="@Members"
+                            TextProperty="DisplayName"
+                            ValueProperty="Id"
+                            Multiple="true"
+                            Chips="true"
+                            AllowFiltering="true"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            Placeholder="Select members"
+                            Style="width:100%;"
+                            TabIndex="2" />
+        </div>
+
+        <div style="display:flex;gap:0.5rem;justify-content:flex-end;" class="rz-mt-4">
+            <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="@Cancel" TabIndex="90" />
+            <RadzenButton Text="Save Family" ButtonType="ButtonType.Submit" Icon="save" IsBusy="@IsSubmitting" TabIndex="91" />
+        </div>
+    </div>
+</EditForm>
