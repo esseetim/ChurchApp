@@ -60,20 +60,44 @@
             <div>
                 <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Type</label>
                 <RadzenDropDown @bind-Value="@_donationModel.Type"
-                                Data="@_donationTypes.Values"
+                                Data="@_donationTypes"
+                                TextProperty="DisplayName"
+                                ValueProperty="Value"
                                 Style="width:100%;"
+                                Change="@(_ => OnTypeChangedAsync())"
                                 Disabled="@IsSubmittingDonation"
                                 TabIndex="5" />
             </div>
 
+            @if (_donationModel.Type is DonationType.PledgePayment or DonationType.ClubDuePayment)
+            {
+                <div>
+                    <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Obligation *</label>
+                    <RadzenDropDown @bind-Value="@_donationModel.ObligationId"
+                                    Data="@_availableObligations"
+                                    TextProperty="DisplayName"
+                                    ValueProperty="Id"
+                                    Placeholder="Select pledge or due"
+                                    Style="width:100%;"
+                                    Disabled="@(!_donationModel.MemberId.HasValue || IsSubmittingDonation)"
+                                    TabIndex="6" />
+                    @if (_availableObligations.Count == 0 && _donationModel.MemberId.HasValue)
+                    {
+                        <small style="color:#dc3545;">No active obligations found for this member.</small>
+                    }
+                </div>
+            }
+
             <div>
                 <label style="display:block;margin-bottom:0.25rem;font-size:0.875rem;font-weight:500;">Method</label>
                 <RadzenDropDown @bind-Value="@_donationModel.Method"
-                                Data="@_donationMethods.Values"
+                                Data="@_donationMethods"
+                                TextProperty="DisplayName"
+                                ValueProperty="Value"
                                 Style="width:100%;"
                                 Change="@(_ => OnMethodChangedAsync())"
                                 Disabled="@IsSubmittingDonation"
-                                TabIndex="6" />
+                                TabIndex="7" />
             </div>
 
             @if (RequiresDonationAccount(_donationModel.Method))
@@ -87,7 +111,7 @@
                                     Placeholder="Select account"
                                     Style="width:100%;"
                                     Disabled="@(!_donationModel.MemberId.HasValue || IsSubmittingDonation)"
-                                    TabIndex="7" />
+                                    TabIndex="8" />
                 </div>
             }
 
@@ -97,7 +121,7 @@
                                   DateFormat="yyyy-MM-dd"
                                   Style="width:100%;"
                                   Disabled="@IsSubmittingDonation"
-                                  TabIndex="8" />
+                                  TabIndex="9" />
             </div>
 
             <div>
@@ -108,7 +132,7 @@
                                Format="c"
                                Style="width:100%;"
                                Disabled="@IsSubmittingDonation"
-                               TabIndex="9" />
+                               TabIndex="10" />
                 <ValidationMessage For="@(() => _donationModel.Amount)" />
             </div>
 
@@ -118,7 +142,7 @@
                                Placeholder="Sunday Service"
                                Style="width:100%;"
                                Disabled="@IsSubmittingDonation"
-                               TabIndex="10" />
+                               TabIndex="11" />
             </div>
 
             <div>
@@ -127,7 +151,7 @@
                                Placeholder="volunteer"
                                Style="width:100%;"
                                Disabled="@IsSubmittingDonation"
-                               TabIndex="11" />
+                               TabIndex="12" />
             </div>
         </div>
 
@@ -138,7 +162,7 @@
                             Rows="3"
                             Style="width:100%;"
                             Disabled="@IsSubmittingDonation"
-                            TabIndex="12" />
+                            TabIndex="13" />
         </div>
 
         <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
@@ -148,7 +172,7 @@
                           Icon="@(IsSubmittingDonation ? "autorenew" : "add_circle")"
                           IsBusy="@IsSubmittingDonation"
                           Disabled="@IsSubmittingDonation"
-                          TabIndex="13" />
+                          TabIndex="14" />
 
             <RadzenButton ButtonType="ButtonType.Button"
                           ButtonStyle="ButtonStyle.Secondary"

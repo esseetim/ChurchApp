@@ -14,28 +14,37 @@ public partial class DonationDesk : ComponentBase
     [Inject] private IDonationService DonationService { get; set; } = null!;
     [Inject] private IMemberService MemberService { get; set; } = null!;
     [Inject] private IFamilyService FamilyService { get; set; } = null!;
+    [Inject] private IObligationService ObligationService { get; set; } = null!;
     [Inject] private NotificationService NotificationService { get; set; } = null!;
     [Inject] private DialogService DialogService { get; set; } = null!;
 
     private List<MemberDisplay> _members = [];
     private List<Family> _families = [];
     private List<DonationAccountDisplay> _availableDonationAccounts = [];
+    private List<ObligationDisplay> _availableObligations = [];
     private DonationFormModel _donationModel = new();
     private RadzenDropDown<Guid?>? _memberDropDown;
     private bool IsSubmittingDonation { get; set; }
 
-    private readonly FrozenDictionary<DonationType, string> _donationTypes = FrozenDictionary.Create(
-        new KeyValuePair<DonationType, string>(DonationType.GeneralOffering, "General Offering"),
-        new KeyValuePair<DonationType, string>(DonationType.Tithe, "Tithe"),
-        new KeyValuePair<DonationType, string>(DonationType.BuildingFund, "Building Fund"));
+    // Use strongly-typed display models instead of dictionaries for type safety
+    private static readonly FrozenSet<DonationTypeDisplay> _donationTypes = new[]
+    {
+        new DonationTypeDisplay(DonationType.GeneralOffering, "General Offering"),
+        new DonationTypeDisplay(DonationType.Tithe, "Tithe"),
+        new DonationTypeDisplay(DonationType.BuildingFund, "Building Fund"),
+        new DonationTypeDisplay(DonationType.PledgePayment, "Pledge Payment"),
+        new DonationTypeDisplay(DonationType.ClubDuePayment, "Club Due Payment")
+    }.ToFrozenSet();
 
-    private readonly FrozenDictionary<DonationMethod, string> _donationMethods = FrozenDictionary.Create(
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Cash, "Cash"),
-        new KeyValuePair<DonationMethod, string>(DonationMethod.CashApp, "CashApp"),
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Zelle, "Zelle"),
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Check, "Check"),
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Card, "Card"),
-        new KeyValuePair<DonationMethod, string>(DonationMethod.Other, "Other"));
+    private static readonly FrozenSet<DonationMethodDisplay> _donationMethods = new[]
+    {
+        new DonationMethodDisplay(DonationMethod.Cash, "Cash"),
+        new DonationMethodDisplay(DonationMethod.CashApp, "CashApp"),
+        new DonationMethodDisplay(DonationMethod.Zelle, "Zelle"),
+        new DonationMethodDisplay(DonationMethod.Check, "Check"),
+        new DonationMethodDisplay(DonationMethod.Card, "Card"),
+        new DonationMethodDisplay(DonationMethod.Other, "Other")
+    }.ToFrozenSet();
 
     protected override async Task OnInitializedAsync() => await LoadLookupData();
 
@@ -92,11 +101,27 @@ public partial class DonationDesk : ComponentBase
     private async Task OnMemberChangedAsync()
     {
         await LoadDonationAccountsAsync();
+        await LoadObligationsAsync();
     }
 
     private async Task OnMethodChangedAsync()
     {
         await LoadDonationAccountsAsync();
+    }
+    
+    private async Task OnTypeChangedAsync()
+    {
+        // Load obligations when PledgePayment or ClubDuePayment is selected
+        if (_donationModel.Type is DonationType.PledgePayment or DonationType.ClubDuePayment)
+        {
+            await LoadObligationsAsync();
+        }
+        else
+        {
+            // Clear obligation selection for other donation types
+            _donationModel.ObligationId = null;
+            _availableObligations.Clear();
+        }
     }
 
     private async Task LoadDonationAccountsAsync()
@@ -133,6 +158,49 @@ public partial class DonationDesk : ComponentBase
 
     private static bool RequiresDonationAccount(DonationMethod method) => method != DonationMethod.Cash;
 
+    /// <summary>
+    /// Loads active obligations for the selected member.
+    /// Only called when PledgePayment or ClubDuePayment is selected.
+    /// </summary>
+    private async Task LoadObligationsAsync()
+    {
+        _availableObligations.Clear();
+        _donationModel.ObligationId = null;
+
+        if (!_donationModel.MemberId.HasValue)
+        {
+            return;
+        }
+
+        try
+        {
+            var response = await ObligationService.GetMemberObligationsAsync(_donationModel.MemberId.Value);
+            
+            // Filter to active obligations matching the donation type
+            var targetObligationType = _donationModel.Type == DonationType.PledgePayment
+                ? ObligationType.FundraisingPledge
+                : ObligationType.ClubDue;
+
+            _availableObligations = response.Obligations
+                .Where(x => x.Status == ObligationStatus.Active && x.Type == targetObligationType)
+                .Select(x => new ObligationDisplay(
+                    x.Id,
+                    x.Title,
+                    $"{x.Title} - ${x.BalanceRemaining:F2} remaining of ${x.TotalAmount:F2}"))
+                .ToList();
+
+            // Auto-select if only one active obligation
+            if (_availableObligations.Count == 1)
+            {
+                _donationModel.ObligationId = _availableObligations[0].Id;
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Failed to load obligations: {ex.Message}");
+        }
+    }
+
     private async Task HandleDonationSubmit()
     {
         if (!_donationModel.MemberId.HasValue)
@@ -145,6 +213,16 @@ public partial class DonationDesk : ComponentBase
         {
             ShowWarning("Please select a donation account for the selected method.");
             return;
+        }
+
+        // Validate obligation selection for pledge/due payments
+        if (_donationModel.Type is DonationType.PledgePayment or DonationType.ClubDuePayment)
+        {
+            if (!_donationModel.ObligationId.HasValue)
+            {
+                ShowWarning("Please select an obligation for pledge or due payments.");
+                return;
+            }
         }
 
         IsSubmittingDonation = true;
@@ -160,7 +238,8 @@ public partial class DonationDesk : ComponentBase
                 IdempotencyKey: Guid.NewGuid().ToString(),
                 EnteredBy: string.IsNullOrWhiteSpace(_donationModel.EnteredBy) ? "volunteer" : _donationModel.EnteredBy,
                 ServiceName: string.IsNullOrWhiteSpace(_donationModel.ServiceName) ? null : _donationModel.ServiceName,
-                Notes: string.IsNullOrWhiteSpace(_donationModel.Notes) ? null : _donationModel.Notes);
+                Notes: string.IsNullOrWhiteSpace(_donationModel.Notes) ? null : _donationModel.Notes,
+                ObligationId: _donationModel.ObligationId);
 
             await DonationService.CreateDonationAsync(request);
             ShowSuccess($"Donation recorded: ${_donationModel.Amount:F2}");
@@ -244,11 +323,26 @@ public partial class DonationDesk : ComponentBase
 
     private sealed record DonationAccountDisplay(Guid Id, DonationMethod Method, string DisplayName);
 
+    private sealed record ObligationDisplay(Guid Id, string Title, string DisplayName);
+
+    /// <summary>
+    /// Display model for DonationType dropdown - provides type safety and encapsulation.
+    /// Following SRP: Single responsibility is to represent a displayable donation type.
+    /// </summary>
+    private sealed record DonationTypeDisplay(DonationType Value, string DisplayName);
+
+    /// <summary>
+    /// Display model for DonationMethod dropdown - provides type safety and encapsulation.
+    /// Following SRP: Single responsibility is to represent a displayable donation method.
+    /// </summary>
+    private sealed record DonationMethodDisplay(DonationMethod Value, string DisplayName);
+
     private sealed class DonationFormModel
     {
         public Guid? MemberId { get; set; }
         public Guid? FamilyId { get; set; }
         public Guid? DonationAccountId { get; set; }
+        public Guid? ObligationId { get; set; }
         public DonationType Type { get; set; } = DonationType.GeneralOffering;
         public DonationMethod Method { get; set; } = DonationMethod.Cash;
         public DateTime DonationDate { get; set; } = DateTime.Today;

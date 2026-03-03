@@ -54,6 +54,7 @@ builder.Services.AddScoped<IDonationService, DonationService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IFamilyService, FamilyService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IObligationService, ObligationService>();
 
 // Register Radzen services (includes DialogService, NotificationService, etc.)
 builder.Services.AddRadzenComponents();

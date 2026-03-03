@@ -25,13 +25,8 @@ public sealed class ObligationFulfillmentHandler(ChurchAppDbContext dbContext)
             .Where(x => x.Id == domainEvent.ObligationId.Value)
             .SingleOrDefaultAsync(cancellationToken);
 
-        if (obligation is null)
-        {
-            return;
-        }
-
         // Check if obligation should be fulfilled
-        obligation.CheckFulfillment();
+        obligation?.CheckFulfillment();
 
         // SaveChanges will be called by the parent transaction/unit of work
     }

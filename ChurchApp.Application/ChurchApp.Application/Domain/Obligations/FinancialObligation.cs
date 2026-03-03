@@ -6,7 +6,7 @@ namespace ChurchApp.Application.Domain.Obligations;
 /// <summary>
 /// Represents a financial commitment made by a member (pledge or due).
 /// </summary>
-public class FinancialObligation
+public sealed class FinancialObligation
 {
     public Guid Id { get; set; }
     public Guid MemberId { get; set; }

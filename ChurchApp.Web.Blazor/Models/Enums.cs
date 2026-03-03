@@ -4,7 +4,9 @@ public enum DonationType
 {
     GeneralOffering = 1,
     Tithe = 2,
-    BuildingFund = 3
+    BuildingFund = 3,
+    PledgePayment = 4,
+    ClubDuePayment = 5
 }
 
 public enum DonationMethod

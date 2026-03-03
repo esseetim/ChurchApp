@@ -13,5 +13,5 @@ public enum ObligationType
     /// <summary>
     /// Membership dues for a church club or ministry.
     /// </summary>
-    ClubDue = 2
+    Dues = 2
 }

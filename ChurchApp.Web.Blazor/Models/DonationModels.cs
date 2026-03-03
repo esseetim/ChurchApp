@@ -12,7 +12,8 @@ public record CreateDonationRequest(
     string? IdempotencyKey,
     string? EnteredBy,
     string? ServiceName,
-    string? Notes
+    string? Notes,
+    Guid? ObligationId = null
 );
 
 public record CreateDonationResponse(

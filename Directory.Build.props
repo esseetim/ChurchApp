@@ -40,4 +40,13 @@
         <PublishTrimmed>true</PublishTrimmed>
     </PropertyGroup>
 
+    <!-- Blazor WASM doesn't support native AOT - must come AFTER Release config -->
+    <PropertyGroup Condition="'$(MSBuildProjectName)' == 'ChurchApp.Web.Blazor'">
+        <PublishAot>false</PublishAot>
+        <PublishTrimmed>true</PublishTrimmed>
+        <IsAotCompatible>false</IsAotCompatible>
+        <EnableAotAnalyzer>false</EnableAotAnalyzer>
+        <RunAOTCompilation>false</RunAOTCompilation>
+    </PropertyGroup>
+
 </Project>
