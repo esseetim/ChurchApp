@@ -1,5 +1,6 @@
 using ChurchApp.Application.Features.Donations;
 using ChurchApp.Application.Features.Summaries;
+using ChurchApp.Application.Features.Obligations;
 using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Infrastructure;
 using ChurchApp.Application.Infrastructure.CompiledModels;
@@ -26,6 +27,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISummaryUpsertService, SummaryUpsertService>();
         services.AddScoped<IDomainEventHandler<DonationCreatedDomainEvent>, DonationCreatedDomainEventHandler>();
         services.AddScoped<IDomainEventHandler<DonationVoidedDomainEvent>, DonationVoidedDomainEventHandler>();
+        services.AddScoped<IDomainEventHandler<DonationCreatedDomainEvent>, ObligationFulfillmentHandler>();
 
         return services;
     }

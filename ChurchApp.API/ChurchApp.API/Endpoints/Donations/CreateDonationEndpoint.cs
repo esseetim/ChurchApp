@@ -53,6 +53,20 @@ public sealed class CreateDonationEndpoint(ChurchAppDbContext dbContext, IUnitOf
             }
         }
 
+        if (req.ObligationId.HasValue)
+        {
+            var obligationExists = await dbContext.FinancialObligations.AnyAsync(
+                x => x.Id == req.ObligationId.Value && x.MemberId == req.MemberId,
+                ct);
+
+            if (!obligationExists)
+            {
+                AddError("Financial obligation not found for member.");
+                await SendErrorsAsync(cancellation: ct);
+                return;
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(req.IdempotencyKey))
         {
             var existingDonation = await dbContext.Donations
@@ -77,7 +91,8 @@ public sealed class CreateDonationEndpoint(ChurchAppDbContext dbContext, IUnitOf
             req.IdempotencyKey,
             req.EnteredBy,
             req.ServiceName,
-            req.Notes);
+            req.Notes,
+            req.ObligationId);
 
         await unitOfWork.ExecuteInTransactionAsync(async txCt =>
         {

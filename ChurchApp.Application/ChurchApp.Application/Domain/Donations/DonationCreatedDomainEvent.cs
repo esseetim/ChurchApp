@@ -7,4 +7,5 @@ public sealed record DonationCreatedDomainEvent(
     Guid MemberId,
     DateOnly DonationDate,
     decimal Amount,
-    string? ServiceName) : IDomainEvent;
+    string? ServiceName,
+    Guid? ObligationId) : IDomainEvent;

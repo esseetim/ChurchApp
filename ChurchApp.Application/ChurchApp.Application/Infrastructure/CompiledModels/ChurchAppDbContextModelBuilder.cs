@@ -12,7 +12,7 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
     public partial class ChurchAppDbContextModel
     {
         private ChurchAppDbContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("eecb9184-4ce9-4025-a265-8cd4f5eadf11"), entityTypeCount: 8)
+            : base(skipDetectChanges: false, modelId: new Guid("f5f7bee9-dcb0-4f9e-a507-b3486c34424a"), entityTypeCount: 9)
         {
         }
 
@@ -24,15 +24,18 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
             var family = FamilyEntityType.Create(this);
             var familyMember = FamilyMemberEntityType.Create(this);
             var member = MemberEntityType.Create(this);
+            var financialObligation = FinancialObligationEntityType.Create(this);
             var report = ReportEntityType.Create(this);
             var summary = SummaryEntityType.Create(this);
 
             DonationEntityType.CreateForeignKey1(donation, donationAccount);
             DonationEntityType.CreateForeignKey2(donation, member);
+            DonationEntityType.CreateForeignKey3(donation, financialObligation);
             DonationAccountEntityType.CreateForeignKey1(donationAccount, member);
             DonationAuditEntityType.CreateForeignKey1(donationAudit, donation);
             FamilyMemberEntityType.CreateForeignKey1(familyMember, family);
             FamilyMemberEntityType.CreateForeignKey2(familyMember, member);
+            FinancialObligationEntityType.CreateForeignKey1(financialObligation, member);
             ReportEntityType.CreateForeignKey1(report, family);
             ReportEntityType.CreateForeignKey2(report, member);
             SummaryEntityType.CreateForeignKey1(summary, family);
@@ -44,6 +47,7 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
             FamilyEntityType.CreateAnnotations(family);
             FamilyMemberEntityType.CreateAnnotations(familyMember);
             MemberEntityType.CreateAnnotations(member);
+            FinancialObligationEntityType.CreateAnnotations(financialObligation);
             ReportEntityType.CreateAnnotations(report);
             SummaryEntityType.CreateAnnotations(summary);
 

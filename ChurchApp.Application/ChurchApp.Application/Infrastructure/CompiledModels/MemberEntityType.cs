@@ -21,7 +21,7 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
                 typeof(Member),
                 baseEntityType,
                 propertyCount: 5,
-                navigationCount: 3,
+                navigationCount: 4,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(

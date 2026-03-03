@@ -38,7 +38,13 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
             .HasForeignKey(x => x.DonationAccountId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        builder.HasOne(x => x.Obligation)
+            .WithMany(x => x.Payments)
+            .HasForeignKey(x => x.ObligationId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasIndex(x => new { x.DonationDate, x.Type });
         builder.HasIndex(x => x.IdempotencyKey).IsUnique();
+        builder.HasIndex(x => x.ObligationId);
     }
 }

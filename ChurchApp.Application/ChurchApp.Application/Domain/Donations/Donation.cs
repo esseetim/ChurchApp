@@ -1,5 +1,6 @@
 using ChurchApp.Application.Domain.Common;
 using ChurchApp.Application.Domain.Members;
+using ChurchApp.Application.Domain.Obligations;
 
 namespace ChurchApp.Application.Domain.Donations;
 
@@ -11,6 +12,9 @@ public class Donation : IHasDomainEvents
 
     public Guid? DonationAccountId { get; set; }
     public DonationAccount? DonationAccount { get; set; }
+
+    public Guid? ObligationId { get; set; }
+    public FinancialObligation? Obligation { get; set; }
 
     public DonationType Type { get; set; }
     public DonationMethod Method { get; set; }
@@ -41,7 +45,8 @@ public class Donation : IHasDomainEvents
         string? idempotencyKey,
         string? enteredBy,
         string? serviceName,
-        string? notes)
+        string? notes,
+        Guid? obligationId = null)
     {
         var actor = string.IsNullOrWhiteSpace(enteredBy) ? "system" : enteredBy.Trim();
 
@@ -50,6 +55,7 @@ public class Donation : IHasDomainEvents
             Id = Guid.NewGuid(),
             MemberId = memberId,
             DonationAccountId = donationAccountId,
+            ObligationId = obligationId,
             Type = type,
             Method = method,
             DonationDate = donationDate,
@@ -67,7 +73,8 @@ public class Donation : IHasDomainEvents
             donation.MemberId,
             donation.DonationDate,
             donation.Amount,
-            donation.ServiceName));
+            donation.ServiceName,
+            donation.ObligationId));
 
         return donation;
     }

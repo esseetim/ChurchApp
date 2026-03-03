@@ -62,4 +62,10 @@ namespace ChurchApp.API;
 [JsonSerializable(typeof(List<FamilyMemberDto>))]
 [JsonSerializable(typeof(AddFamilyMemberRequest))]
 [JsonSerializable(typeof(AddFamilyMemberResponse))]
+[JsonSerializable(typeof(CreateObligationRequest))]
+[JsonSerializable(typeof(CreateObligationResponse))]
+[JsonSerializable(typeof(UpdateObligationRequest))]
+[JsonSerializable(typeof(ObligationDto))]
+[JsonSerializable(typeof(ObligationsResponse))]
+[JsonSerializable(typeof(List<ObligationDto>))]
 public partial class AppJsonSerializerContext : JsonSerializerContext;

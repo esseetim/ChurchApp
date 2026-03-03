@@ -1,4 +1,5 @@
 using ChurchApp.Application.Domain.Donations;
+using ChurchApp.Application.Domain.Obligations;
 using ChurchApp.Application.Domain.Reports;
 
 namespace ChurchApp.API.Endpoints.Contracts;
@@ -13,7 +14,8 @@ public sealed record CreateDonationRequest(
     string? IdempotencyKey,
     string? EnteredBy,
     string? ServiceName,
-    string? Notes);
+    string? Notes,
+    Guid? ObligationId = null);
 
 public sealed record CreateDonationResponse(Guid DonationId, int Version, bool IsDuplicate);
 
@@ -36,6 +38,7 @@ public sealed record DonationLedgerItemDto(
     Guid Id,
     Guid MemberId,
     Guid? DonationAccountId,
+    Guid? ObligationId,
     DonationType Type,
     DonationMethod Method,
     DateOnly DonationDate,
@@ -51,6 +54,35 @@ public sealed record DonationLedgerItemDto(
     int Version);
 
 public sealed record DonationLedgerResponse(int Page, int PageSize, int TotalCount, List<DonationLedgerItemDto> Donations);
+
+// Financial Obligation Contracts
+public sealed record CreateObligationRequest(
+    ObligationType Type,
+    string Title,
+    decimal TotalAmount,
+    DateOnly StartDate,
+    DateOnly DueDate);
+
+public sealed record CreateObligationResponse(Guid ObligationId);
+
+public sealed record UpdateObligationRequest(
+    string Title,
+    decimal TotalAmount,
+    DateOnly DueDate);
+
+public sealed record ObligationDto(
+    Guid Id,
+    Guid MemberId,
+    ObligationType Type,
+    string Title,
+    decimal TotalAmount,
+    decimal AmountPaid,
+    decimal BalanceRemaining,
+    DateOnly StartDate,
+    DateOnly DueDate,
+    ObligationStatus Status);
+
+public sealed record ObligationsResponse(List<ObligationDto> Obligations);
 
 public sealed record GetServiceSummariesRequest(string ServiceName, DateOnly StartDate, DateOnly EndDate, bool PersistReport = false);
 

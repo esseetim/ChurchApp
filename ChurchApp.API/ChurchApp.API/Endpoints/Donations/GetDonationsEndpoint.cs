@@ -72,6 +72,7 @@ public sealed class GetDonationsEndpoint(ChurchAppDbContext dbContext)
                 x.Id,
                 x.MemberId,
                 x.DonationAccountId,
+                x.ObligationId,
                 x.Type,
                 x.Method,
                 x.DonationDate,

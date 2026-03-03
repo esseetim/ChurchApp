@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Members;
+using ChurchApp.Application.Domain.Obligations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -23,10 +24,10 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
                 "ChurchApp.Application.Domain.Donations.Donation",
                 typeof(Donation),
                 baseEntityType,
-                propertyCount: 17,
-                navigationCount: 3,
-                foreignKeyCount: 2,
-                unnamedIndexCount: 4,
+                propertyCount: 18,
+                navigationCount: 4,
+                foreignKeyCount: 3,
+                unnamedIndexCount: 5,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -116,6 +117,14 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
                 maxLength: 1000);
             notes.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var obligationId = runtimeEntityType.AddProperty(
+                "ObligationId",
+                typeof(Guid?),
+                propertyInfo: typeof(Donation).GetProperty("ObligationId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(Donation).GetField("<ObligationId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            obligationId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var serviceName = runtimeEntityType.AddProperty(
                 "ServiceName",
                 typeof(string),
@@ -195,6 +204,9 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
                 new[] { memberId });
 
             var index2 = runtimeEntityType.AddIndex(
+                new[] { obligationId });
+
+            var index3 = runtimeEntityType.AddIndex(
                 new[] { donationDate, type });
 
             return runtimeEntityType;
@@ -245,6 +257,30 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
                 typeof(ICollection<Donation>),
                 propertyInfo: typeof(Member).GetProperty("Donations", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Member).GetField("<Donations>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey3(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("ObligationId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType,
+                deleteBehavior: DeleteBehavior.SetNull);
+
+            var obligation = declaringEntityType.AddNavigation("Obligation",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(FinancialObligation),
+                propertyInfo: typeof(Donation).GetProperty("Obligation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(Donation).GetField("<Obligation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            var payments = principalEntityType.AddNavigation("Payments",
+                runtimeForeignKey,
+                onDependent: false,
+                typeof(ICollection<Donation>),
+                propertyInfo: typeof(FinancialObligation).GetProperty("Payments", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(FinancialObligation).GetField("<Payments>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }

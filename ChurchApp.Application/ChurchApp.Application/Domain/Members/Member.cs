@@ -1,5 +1,6 @@
 using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Families;
+using ChurchApp.Application.Domain.Obligations;
 
 namespace ChurchApp.Application.Domain.Members;
 
@@ -14,4 +15,5 @@ public class Member
     public ICollection<FamilyMember> FamilyMembers { get; set; } = [];
     public ICollection<DonationAccount> DonationAccounts { get; set; } = [];
     public ICollection<Donation> Donations { get; set; } = [];
+    public ICollection<FinancialObligation> FinancialObligations { get; set; } = [];
 }
