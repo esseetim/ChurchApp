@@ -2,7 +2,8 @@ using FastEndpoints;
 using FastEndpoints.Swagger;
 using ChurchApp.Application;
 using Scalar.AspNetCore;
-using Microsoft.EntityFrameworkCore; // For MigrateAsync extension method
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis; // For MigrateAsync extension method
 
 namespace ChurchApp.API;
 
@@ -48,6 +49,8 @@ public class Program
                     .AllowAnyMethod();
             });
         });
+
+        builder.Services.AddOpenApi();
         
         // Configure OpenAPI document (required for Scalar)
         builder.Services.SwaggerDocument(o =>
@@ -84,6 +87,7 @@ public class Program
                 options
                     .WithTitle("ChurchApp API Documentation")
                     .WithTheme(ScalarTheme.Purple)
+                    .WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json")
                     .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
                     .WithPreferredScheme("http") // Development uses HTTP
                     .WithModels(true) // Show schemas
@@ -93,10 +97,10 @@ public class Program
         
         // Auto-apply migrations on startup (Jez Humble's automated deployment)
         // This ensures database is always up-to-date in development
-        if (app.Environment.IsDevelopment())
+        /*if (app.Environment.IsDevelopment())
         {
             await EnsureDatabaseMigrated(app.Services);
-        }
+        }*/
         
         await app.RunAsync();
     }
@@ -105,8 +109,7 @@ public class Program
     /// Applies pending EF Core migrations automatically on startup.
     /// Follows Jez Humble's Continuous Delivery principle: "Deploy infrastructure with code."
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Migrations are not used with Native AOT. In production, use migration bundles instead.")]
-    private static async Task EnsureDatabaseMigrated(IServiceProvider services)
+    /*private static async Task EnsureDatabaseMigrated(IServiceProvider services)
     {
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ChurchApp.Application.Infrastructure.ChurchAppDbContext>();
@@ -122,5 +125,5 @@ public class Program
             // In development, we log and continue (Kent Beck's fail-fast in the right place)
             // In production, this should fail the startup
         }
-    }
+    }*/
 }

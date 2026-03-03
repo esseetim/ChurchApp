@@ -3,3 +3,6 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+/ChurchApp.sln.DotSettings.user
+/.idea/.idea.ChurchApp/.idea/dataSources.xml
+/.idea/.idea.ChurchApp/.idea/db-forest-config.xml

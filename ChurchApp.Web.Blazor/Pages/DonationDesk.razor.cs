@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Microsoft.AspNetCore.Components;
 using ChurchApp.Web.Blazor.Models;
 using ChurchApp.Web.Blazor.Services;
@@ -9,38 +10,34 @@ namespace ChurchApp.Web.Blazor.Pages;
 public partial class DonationDesk : ComponentBase
 {
     [Inject]
-    private IDonationService DonationService { get; set; } = default!;
+    private IDonationService DonationService { get; set; } = null!;
 
     [Inject]
-    private IMemberService MemberService { get; set; } = default!;
+    private IMemberService MemberService { get; set; } = null!;
 
     [Inject]
-    private IFamilyService FamilyService { get; set; } = default!;
+    private IFamilyService FamilyService { get; set; } = null!;
 
     [Inject]
-    private NotificationService NotificationService { get; set; } = default!;
+    private NotificationService NotificationService { get; set; } = null!;
 
-    private List<MemberDisplay> members = new();
-    private List<Family> families = new();
-    private DonationFormModel donationModel = new();
+    private List<MemberDisplay> _members = [];
+    private List<Family> _families = [];
+    private DonationFormModel _donationModel = new();
     private bool IsSubmittingDonation { get; set; }
 
-    private readonly Dictionary<DonationType, string> donationTypes = new()
-    {
-        { DonationType.GeneralOffering, "General Offering" },
-        { DonationType.Tithe, "Tithe" },
-        { DonationType.BuildingFund, "Building Fund" }
-    };
+    private readonly FrozenDictionary<DonationType, string> _donationTypes = FrozenDictionary.Create(
+        new KeyValuePair<DonationType, string>(DonationType.GeneralOffering, "General Offering"), 
+        new KeyValuePair<DonationType, string>(DonationType.Tithe, "Tithe"), 
+        new KeyValuePair<DonationType, string>(DonationType.BuildingFund, "Building Fund"));
 
-    private readonly Dictionary<DonationMethod, string> donationMethods = new()
-    {
-        { DonationMethod.Cash, "Cash" },
-        { DonationMethod.CashApp, "CashApp" },
-        { DonationMethod.Zelle, "Zelle" },
-        { DonationMethod.Check, "Check" },
-        { DonationMethod.Card, "Card" },
-        { DonationMethod.Other, "Other" }
-    };
+    private readonly FrozenDictionary<DonationMethod, string> _donationMethods = FrozenDictionary.Create(
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Cash, "Cash"), 
+        new KeyValuePair<DonationMethod, string>(DonationMethod.CashApp, "CashApp"), 
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Zelle, "Zelle"), 
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Check, "Check"), 
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Card, "Card"), 
+        new KeyValuePair<DonationMethod, string>(DonationMethod.Other, "Other"));
 
     protected override async Task OnInitializedAsync() => await LoadLookupData();
 
@@ -56,7 +53,7 @@ public partial class DonationDesk : ComponentBase
             var memberResponse = await membersTask;
             var familyResponse = await familiesTask;
 
-            members = memberResponse.Members
+            _members = memberResponse.Members
                 .Select(m => new MemberDisplay
                 {
                     Id = m.Id,
@@ -64,7 +61,7 @@ public partial class DonationDesk : ComponentBase
                 })
                 .ToList();
 
-            families = familyResponse.Families.ToList();
+            _families = familyResponse.Families.ToList();
         }
         catch (Exception ex)
         {
@@ -75,18 +72,18 @@ public partial class DonationDesk : ComponentBase
     public async Task OnMemberCreatedHandler(CreateMemberResponse response)
     {
         await LoadLookupData();
-        donationModel.MemberId = response.MemberId;
+        _donationModel.MemberId = response.MemberId;
     }
 
     public async Task OnFamilyCreatedHandler(CreateFamilyResponse response)
     {
         await LoadLookupData();
-        donationModel.FamilyId = response.FamilyId;
+        _donationModel.FamilyId = response.FamilyId;
     }
 
     private async Task HandleDonationSubmit()
     {
-        if (!donationModel.MemberId.HasValue)
+        if (!_donationModel.MemberId.HasValue)
         {
             ShowWarning("Please select a member");
             return;
@@ -96,24 +93,24 @@ public partial class DonationDesk : ComponentBase
         try
         {
             var request = new CreateDonationRequest(
-                MemberId: donationModel.MemberId.Value,
+                MemberId: _donationModel.MemberId.Value,
                 DonationAccountId: null,
-                Type: donationModel.Type,
-                Method: donationModel.Method,
-                DonationDate: donationModel.DonationDate.ToString("yyyy-MM-dd"),
-                Amount: donationModel.Amount,
+                Type: _donationModel.Type,
+                Method: _donationModel.Method,
+                DonationDate: _donationModel.DonationDate.ToString("yyyy-MM-dd"),
+                Amount: _donationModel.Amount,
                 IdempotencyKey: Guid.NewGuid().ToString(),
-                EnteredBy: string.IsNullOrWhiteSpace(donationModel.EnteredBy) ? "volunteer" : donationModel.EnteredBy,
-                ServiceName: string.IsNullOrWhiteSpace(donationModel.ServiceName) ? null : donationModel.ServiceName,
-                Notes: string.IsNullOrWhiteSpace(donationModel.Notes) ? null : donationModel.Notes
+                EnteredBy: string.IsNullOrWhiteSpace(_donationModel.EnteredBy) ? "volunteer" : _donationModel.EnteredBy,
+                ServiceName: string.IsNullOrWhiteSpace(_donationModel.ServiceName) ? null : _donationModel.ServiceName,
+                Notes: string.IsNullOrWhiteSpace(_donationModel.Notes) ? null : _donationModel.Notes
             );
 
             var response = await DonationService.CreateDonationAsync(request);
 
-            ShowSuccess($"Donation recorded: ${donationModel.Amount:F2}");
+            ShowSuccess($"Donation recorded: ${_donationModel.Amount:F2}");
 
             // Reset form
-            donationModel = new DonationFormModel
+            _donationModel = new DonationFormModel
             {
                 DonationDate = DateTime.Today,
                 Type = DonationType.GeneralOffering,
@@ -134,13 +131,13 @@ public partial class DonationDesk : ComponentBase
 
     private async Task LinkMemberToFamily()
     {
-        if (!donationModel.MemberId.HasValue || !donationModel.FamilyId.HasValue)
+        if (!_donationModel.MemberId.HasValue || !_donationModel.FamilyId.HasValue)
             return;
 
         try
         {
-            var request = new AddFamilyMemberRequest(donationModel.MemberId.Value);
-            await FamilyService.AddFamilyMemberAsync(donationModel.FamilyId.Value, request);
+            var request = new AddFamilyMemberRequest(_donationModel.MemberId.Value);
+            await FamilyService.AddFamilyMemberAsync(_donationModel.FamilyId.Value, request);
 
             ShowSuccess("Member linked to family");
             await LoadLookupData();

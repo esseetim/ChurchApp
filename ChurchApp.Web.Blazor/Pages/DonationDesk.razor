@@ -10,15 +10,15 @@
 <RadzenCard>
     <h3 class="text-sm font-semibold text-slate-900" style="margin-bottom: 0.75rem;">Record Donation</h3>
     
-    <EditForm Model="@donationModel" OnValidSubmit="@HandleDonationSubmit">
+    <EditForm Model="@_donationModel" OnValidSubmit="@HandleDonationSubmit">
         <DataAnnotationsValidator />
         
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.75rem;">
             <!-- Member Selection -->
             <div>
                 <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Member *</label>
-                <RadzenDropDown @bind-Value="@donationModel.MemberId"
-                              Data="@members"
+                <RadzenDropDown @bind-Value="@_donationModel.MemberId"
+                              Data="@_members"
                               TextProperty="DisplayName"
                               ValueProperty="Id"
                               Placeholder="Select member"
@@ -26,14 +26,14 @@
                               FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                               Style="width: 100%;"
                               Disabled="@IsSubmittingDonation" />
-                <ValidationMessage For="@(() => donationModel.MemberId)" />
+                <ValidationMessage For="@(() => _donationModel.MemberId)" />
             </div>
 
             <!-- Family Selection -->
             <div>
                 <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Family (optional)</label>
-                <RadzenDropDown @bind-Value="@donationModel.FamilyId"
-                              Data="@families"
+                <RadzenDropDown @bind-Value="@_donationModel.FamilyId"
+                              Data="@_families"
                               TextProperty="Name"
                               ValueProperty="Id"
                               Placeholder="Select family"
@@ -47,8 +47,8 @@
             <!-- Donation Type -->
             <div>
                 <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Type</label>
-                <RadzenDropDown @bind-Value="@donationModel.Type"
-                              Data="@donationTypes"
+                <RadzenDropDown @bind-Value="@_donationModel.Type"
+                              Data="@_donationTypes.Values"
                               Style="width: 100%;"
                               Disabled="@IsSubmittingDonation" />
             </div>
@@ -56,8 +56,8 @@
             <!-- Donation Method -->
             <div>
                 <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Method</label>
-                <RadzenDropDown @bind-Value="@donationModel.Method"
-                              Data="@donationMethods"
+                <RadzenDropDown @bind-Value="@_donationModel.Method"
+                              Data="@_donationMethods.Values"
                               Style="width: 100%;"
                               Disabled="@IsSubmittingDonation" />
             </div>
@@ -65,7 +65,7 @@
             <!-- Donation Date -->
             <div>
                 <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Date</label>
-                <RadzenDatePicker @bind-Value="@donationModel.DonationDate"
+                <RadzenDatePicker @bind-Value="@_donationModel.DonationDate"
                                 DateFormat="yyyy-MM-dd"
                                 Style="width: 100%;"
                                 Disabled="@IsSubmittingDonation" />
@@ -74,19 +74,19 @@
             <!-- Amount -->
             <div>
                 <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Amount *</label>
-                <RadzenNumeric @bind-Value="@donationModel.Amount"
+                <RadzenNumeric @bind-Value="@_donationModel.Amount"
                              Min="0.01m"
                              Step="0.01m"
                              Format="c"
                              Style="width: 100%;"
                              Disabled="@IsSubmittingDonation" />
-                <ValidationMessage For="@(() => donationModel.Amount)" />
+                <ValidationMessage For="@(() => _donationModel.Amount)" />
             </div>
 
             <!-- Service Name -->
             <div>
                 <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Service Name</label>
-                <RadzenTextBox @bind-Value="@donationModel.ServiceName"
+                <RadzenTextBox @bind-Value="@_donationModel.ServiceName"
                              Placeholder="Sunday Service"
                              Style="width: 100%;"
                              Disabled="@IsSubmittingDonation" />
@@ -95,7 +95,7 @@
             <!-- Entered By -->
             <div>
                 <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Entered By</label>
-                <RadzenTextBox @bind-Value="@donationModel.EnteredBy"
+                <RadzenTextBox @bind-Value="@_donationModel.EnteredBy"
                              Placeholder="volunteer"
                              Style="width: 100%;"
                              Disabled="@IsSubmittingDonation" />
@@ -105,7 +105,7 @@
         <!-- Notes -->
         <div style="margin-bottom: 0.75rem;">
             <label style="display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500;">Notes (optional)</label>
-            <RadzenTextArea @bind-Value="@donationModel.Notes"
+            <RadzenTextArea @bind-Value="@_donationModel.Notes"
                           Placeholder="Additional notes"
                           Rows="3"
                           Style="width: 100%;"
@@ -126,7 +126,7 @@
                         Text="Link Member to Family"
                         Icon="link"
                         Click="@LinkMemberToFamily"
-                        Disabled="@(IsSubmittingDonation || !donationModel.MemberId.HasValue || !donationModel.FamilyId.HasValue)" />
+                        Disabled="@(IsSubmittingDonation || !_donationModel.MemberId.HasValue || !_donationModel.FamilyId.HasValue)" />
             
             <RadzenButton ButtonType="ButtonType.Button"
                         ButtonStyle="ButtonStyle.Light"
