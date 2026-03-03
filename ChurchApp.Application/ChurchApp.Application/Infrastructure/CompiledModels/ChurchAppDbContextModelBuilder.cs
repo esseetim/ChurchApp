@@ -12,7 +12,7 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
     public partial class ChurchAppDbContextModel
     {
         private ChurchAppDbContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("ad47bd13-f113-4df2-be53-c8270c48119c"), entityTypeCount: 8)
+            : base(skipDetectChanges: false, modelId: new Guid("eecb9184-4ce9-4025-a265-8cd4f5eadf11"), entityTypeCount: 8)
         {
         }
 

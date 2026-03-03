@@ -36,6 +36,18 @@ public class Program
         
         // Add FastEndpoints with OpenAPI/Swagger document generation
         builder.Services.AddFastEndpoints();
+
+        // Allow the Blazor WebAssembly frontend to call API endpoints in development.
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("DevCors", policy =>
+            {
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
         
         // Configure OpenAPI document (required for Scalar)
         builder.Services.SwaggerDocument(o =>
@@ -52,6 +64,10 @@ public class Program
         
         // Configure middleware pipeline (order matters - Uncle Bob's sequence principle)
         app.UseHttpsRedirection();
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseCors("DevCors");
+        }
         app.UseFastEndpoints();
         app.MapDefaultEndpoints();
         
