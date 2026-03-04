@@ -7,6 +7,8 @@ using ChurchApp.Application.Features.Transactions.Repositories;
 using ChurchApp.Application.Infrastructure;
 using ChurchApp.Application.Infrastructure.CompiledModels;
 using ChurchApp.Application.Infrastructure.DomainEvents;
+using ChurchApp.Application.Infrastructure.Gmail;
+using ChurchApp.Application.Infrastructure.Gmail.Parsers;
 using ChurchApp.Application.Infrastructure.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -48,5 +50,20 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDonationTypeClassifier, TitheClassifier>();
         services.AddScoped<IDonationTypeClassifier, BuildingFundClassifier>();
         services.AddScoped<DonationTypeClassificationService>();
+        
+        // Gmail transaction extraction services
+        services.Configure<GmailWorkerOptions>(configuration.GetSection(GmailWorkerOptions.Section));
+        services.AddSingleton<IEmailParser, CashAppEmailParser>();
+        services.AddSingleton<IEmailParser, ZelleEmailParser>();
+        services.AddHostedService<GmailExtractionWorker>();
+        
+        // DbContext factory for background services
+        services.AddDbContextFactory<ChurchAppDbContext>(options =>
+        {
+            options.UseNpgsql(connectionString);
+#if !DEBUG
+            options.UseModel(ChurchAppDbContextModel.Instance);
+#endif
+        });
     }
 }

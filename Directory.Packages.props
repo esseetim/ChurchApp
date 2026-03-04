@@ -43,6 +43,18 @@
         
         <!-- HTTP & Resilience -->
         <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.1.0" />
+        <PackageVersion Include="Polly" Version="8.5.0" />
+        
+        <!-- Gmail API -->
+        <PackageVersion Include="Google.Apis.Gmail.v1" Version="1.70.0.3819" />
+        <PackageVersion Include="Google.Apis.Auth" Version="1.70.0" />
+        
+        <!-- HTML Parsing -->
+        <PackageVersion Include="HtmlAgilityPack" Version="1.11.73" />
+        
+        <!-- Hosted Services -->
+        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
+        <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
 
         <!-- Aspire -->
         <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.1.2" />
