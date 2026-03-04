@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using ChurchApp.Application.Domain.Members;
 using ChurchApp.Application.Domain.Obligations;
+using ChurchApp.Primitives.Obligations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable 219, 612, 618
@@ -23,6 +25,8 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
                 "ChurchApp.Application.Domain.Obligations.FinancialObligation",
                 typeof(FinancialObligation),
                 baseEntityType,
+                discriminatorProperty: "Type",
+                derivedTypesCount: 2,
                 propertyCount: 8,
                 navigationCount: 2,
                 foreignKeyCount: 1,
@@ -95,7 +99,9 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
                 typeof(ObligationType),
                 propertyInfo: typeof(FinancialObligation).GetProperty("Type", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(FinancialObligation).GetField("<Type>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                providerPropertyType: typeof(int));
+                afterSaveBehavior: PropertySaveBehavior.Throw,
+                providerPropertyType: typeof(int),
+                valueGeneratorFactory: new DiscriminatorValueGeneratorFactory().Create);
             type.SetSentinelFromProviderValue(0);
             type.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
@@ -139,7 +145,9 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
 
         public static void CreateAnnotations(RuntimeEntityType runtimeEntityType)
         {
+            runtimeEntityType.AddAnnotation("DiscriminatorMappingComplete", true);
             runtimeEntityType.AddAnnotation("Relational:FunctionName", null);
+            runtimeEntityType.AddAnnotation("Relational:MappingStrategy", "TPH");
             runtimeEntityType.AddAnnotation("Relational:Schema", null);
             runtimeEntityType.AddAnnotation("Relational:SqlQuery", null);
             runtimeEntityType.AddAnnotation("Relational:TableName", "FinancialObligations");

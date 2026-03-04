@@ -5,6 +5,7 @@ using ChurchApp.API.Endpoints.Contracts;
 using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Reports;
 using ChurchApp.Application.Infrastructure;
+using ChurchApp.Primitives.Donations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ChurchApp.Tests.Integration;
@@ -31,7 +32,7 @@ public class DonationFlowTests : IClassFixture<ApiTestFactory>
             DonationType.Tithe,
             DonationMethod.Cash,
             new DateOnly(2026, 3, 1),
-            100m,
+            DonationAmount.Hundred,
             $"create-{Guid.NewGuid():N}",
             "test-runner",
             "Sunday Service",
@@ -68,7 +69,7 @@ public class DonationFlowTests : IClassFixture<ApiTestFactory>
             DonationType.GeneralOffering,
             DonationMethod.Cash,
             new DateOnly(2026, 3, 1),
-            55m,
+            DonationAmount.Fifty + DonationAmount.Fifty,
             $"void-{Guid.NewGuid():N}",
             "test-runner",
             "Sunday Service",

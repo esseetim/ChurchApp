@@ -3,6 +3,9 @@ using System;
 using System.Reflection;
 using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Transactions;
+using ChurchApp.Application.Infrastructure.ValueConverters;
+using ChurchApp.Primitives.Donations;
+using ChurchApp.Primitives.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -40,12 +43,14 @@ namespace ChurchApp.Application.Infrastructure.CompiledModels
 
             var amount = runtimeEntityType.AddProperty(
                 "Amount",
-                typeof(decimal),
+                typeof(DonationAmount),
                 propertyInfo: typeof(RawTransaction).GetProperty("Amount", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(RawTransaction).GetField("<Amount>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 precision: 18,
                 scale: 2,
-                sentinel: 0m);
+                valueConverter: new DonationAmountValueConverter(),
+                valueComparer: new DonationAmountValueComparer());
+            amount.SetSentinelFromProviderValue(0m);
             amount.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var createdAtUtc = runtimeEntityType.AddProperty(

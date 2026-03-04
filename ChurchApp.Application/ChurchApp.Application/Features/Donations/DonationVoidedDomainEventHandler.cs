@@ -1,4 +1,3 @@
-using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Features.Summaries;
 using ChurchApp.Application.Infrastructure.DomainEvents;
 

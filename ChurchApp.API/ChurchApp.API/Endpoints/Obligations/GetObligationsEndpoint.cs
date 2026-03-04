@@ -30,8 +30,8 @@ public sealed class GetObligationsEndpoint(ChurchAppDbContext dbContext)
         // Load obligations with their payments for calculation
         var obligations = await dbContext.FinancialObligations
             .Where(x => x.MemberId == memberId)
-            .Include(x => x.Payments.Where(p => p.Status == Application.Domain.Donations.DonationStatus.Active))
-            .OrderByDescending(x => x.Status == Application.Domain.Obligations.ObligationStatus.Active)
+            .Include(x => x.Payments.Where(p => p.Status == DonationStatus.Active))
+            .OrderByDescending(x => x.Status == ObligationStatus.Active)
             .ThenBy(x => x.DueDate)
             .Select(x => new ObligationDto(
                 x.Id,

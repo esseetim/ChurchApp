@@ -1,4 +1,3 @@
-using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Infrastructure;
 using ChurchApp.Application.Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;

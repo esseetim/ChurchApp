@@ -1,4 +1,4 @@
-namespace ChurchApp.Application.Domain.Transactions;
+namespace ChurchApp.Primitives.Transactions;
 
 /// <summary>
 /// Represents the external payment provider for a transaction.
@@ -6,12 +6,12 @@ namespace ChurchApp.Application.Domain.Transactions;
 public enum TransactionProvider
 {
     /// <summary>
-    /// CashApp (Square) payment provider
+    /// CashApp (Square) payment provider.
     /// </summary>
     CashApp = 1,
     
     /// <summary>
-    /// Zelle payment provider
+    /// Zelle payment provider.
     /// </summary>
     Zelle = 2
 }

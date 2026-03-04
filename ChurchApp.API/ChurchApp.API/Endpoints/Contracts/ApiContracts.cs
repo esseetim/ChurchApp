@@ -1,6 +1,5 @@
-using ChurchApp.Application.Domain.Donations;
-using ChurchApp.Application.Domain.Obligations;
 using ChurchApp.Application.Domain.Reports;
+using ChurchApp.Primitives.Donations;
 
 namespace ChurchApp.API.Endpoints.Contracts;
 
@@ -10,7 +9,7 @@ public sealed record CreateDonationRequest(
     DonationType Type,
     DonationMethod Method,
     DateOnly DonationDate,
-    decimal Amount,
+    DonationAmount Amount,
     string? IdempotencyKey,
     string? EnteredBy,
     string? ServiceName,

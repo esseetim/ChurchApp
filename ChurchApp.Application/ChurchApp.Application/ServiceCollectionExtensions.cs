@@ -4,7 +4,6 @@ using ChurchApp.Application.Features.Obligations;
 using ChurchApp.Application.Features.Transactions;
 using ChurchApp.Application.Features.Transactions.Classification;
 using ChurchApp.Application.Features.Transactions.Repositories;
-using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Infrastructure;
 using ChurchApp.Application.Infrastructure.CompiledModels;
 using ChurchApp.Application.Infrastructure.DomainEvents;

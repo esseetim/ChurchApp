@@ -1,23 +1,6 @@
+using ChurchApp.Primitives.Obligations;
+
 namespace ChurchApp.Web.Blazor.Models;
-
-/// <summary>
-/// Represents the type of financial obligation.
-/// </summary>
-public enum ObligationType
-{
-    FundraisingPledge = 1,
-    ClubDue = 2
-}
-
-/// <summary>
-/// Represents the status of an obligation.
-/// </summary>
-public enum ObligationStatus
-{
-    Active = 1,
-    Fulfilled = 2,
-    Cancelled = 3
-}
 
 /// <summary>
 /// Financial obligation data transfer object.

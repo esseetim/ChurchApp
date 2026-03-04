@@ -3,7 +3,7 @@
     <File Path=".gitignore" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
-    <File Path="Directory.Build.targets"/>
+    <File Path="Directory.Build.targets" />
     <File Path="README.md" />
     <File Path="nuget.config" />
   </Folder>
@@ -13,7 +13,7 @@
     <File Path="build-api.sh" />
     <File Path="run-api.sh" />
     <File Path="run-apphost.sh" />
-    <File Path="migrate-database.sh"/>
+    <File Path="migrate-database.sh" />
     <File Path="migrate-database.ps1" />
     <File Path="ensure-ef-compiled-model.sh" />
     <File Path="regenerate-compiled-model.ps1" />
@@ -34,5 +34,6 @@
   </Folder>
   <Project Path="ChurchApp.API/ChurchApp.API/ChurchApp.API.csproj" />
   <Project Path="ChurchApp.Application/ChurchApp.Application/ChurchApp.Application.csproj" />
+  <Project Path="ChurchApp.Primitives/ChurchApp.Primitives/ChurchApp.Primitives.csproj" />
   <Project Path="ChurchApp.Web.Blazor/ChurchApp.Web.Blazor.csproj" />
 </Solution>

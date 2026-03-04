@@ -1,4 +1,4 @@
-namespace ChurchApp.Application.Domain.Obligations;
+namespace ChurchApp.Primitives.Obligations;
 
 /// <summary>
 /// Represents the current status of a financial obligation.

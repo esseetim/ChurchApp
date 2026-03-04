@@ -2,6 +2,8 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ChurchApp.Web.Blazor.Models;
+using ChurchApp.Primitives.Donations;
+using ChurchApp.Primitives.Obligations;
 
 namespace ChurchApp.Web.Blazor.Serialization;
 
@@ -41,6 +43,11 @@ namespace ChurchApp.Web.Blazor.Serialization;
 [JsonSerializable(typeof(ObligationDto))]
 [JsonSerializable(typeof(ObligationsResponse))]
 [JsonSerializable(typeof(CreateObligationRequest))]
+[JsonSerializable(typeof(DonationType))]
+[JsonSerializable(typeof(DonationMethod))]
+[JsonSerializable(typeof(DonationStatus))]
+[JsonSerializable(typeof(ObligationType))]
+[JsonSerializable(typeof(ObligationStatus))]
 [JsonSerializable(typeof(ImmutableArray<DonationLedgerItem>))]
 [JsonSerializable(typeof(ImmutableArray<Member>))]
 [JsonSerializable(typeof(ImmutableArray<DonationAccount>))]

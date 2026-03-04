@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Members;
+using ChurchApp.Primitives.Donations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;

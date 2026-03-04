@@ -1,9 +1,8 @@
-using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Obligations;
-using ChurchApp.Application.Domain.Transactions;
 using ChurchApp.Application.Features.Transactions.Classification;
 using ChurchApp.Application.Features.Transactions.Repositories;
 using ChurchApp.Application.Infrastructure;
+using ChurchApp.Primitives.Donations;
 using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -210,7 +209,7 @@ public sealed class RawTransactionResolverHandler : IIntegrationEventHandler<Raw
         DonationType Type,
         DonationMethod Method,
         DateOnly DonationDate,
-        decimal Amount,
+        DonationAmount Amount,
         string IdempotencyKey,
         string EnteredBy,
         string? ServiceName,

@@ -1,4 +1,3 @@
-using ChurchApp.Application.Domain.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

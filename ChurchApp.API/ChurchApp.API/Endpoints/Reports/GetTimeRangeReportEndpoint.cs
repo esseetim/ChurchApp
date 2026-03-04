@@ -1,7 +1,6 @@
 using System.Text.Json;
 using ChurchApp.API;
 using ChurchApp.API.Endpoints.Contracts;
-using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Domain.Reports;
 using ChurchApp.Application.Infrastructure;
 using FastEndpoints;

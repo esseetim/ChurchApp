@@ -16,6 +16,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\ChurchApp.Application\ChurchApp.Application\ChurchApp.Application.csproj" />
         <ProjectReference Include="..\..\ChurchApp.ServiceDefaults\ChurchApp.ServiceDefaults\ChurchApp.ServiceDefaults.csproj" />
+        <ProjectReference Include="..\..\ChurchApp.Primitives\ChurchApp.Primitives\ChurchApp.Primitives.csproj" />
     </ItemGroup>
 
     <ItemGroup>

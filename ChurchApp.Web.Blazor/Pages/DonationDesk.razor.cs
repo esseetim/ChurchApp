@@ -176,7 +176,7 @@ public partial class DonationDesk : ComponentBase
             // Filter to active obligations matching the donation type
             var targetObligationType = _donationModel.Type == DonationType.PledgePayment
                 ? ObligationType.FundraisingPledge
-                : ObligationType.ClubDue;
+                : ObligationType.Dues;
 
             _availableObligations = [.. response.Obligations
                 .Where(x => x.Status == ObligationStatus.Active && x.Type == targetObligationType)

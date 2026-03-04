@@ -12,19 +12,24 @@ public class FinancialObligationConfiguration : IEntityTypeConfiguration<Financi
     public void Configure(EntityTypeBuilder<FinancialObligation> builder)
     {
         builder.HasKey(x => x.Id);
+        
+        builder.HasDiscriminator(x => x.Type)
+            .HasValue<Pledge>(ObligationType.FundraisingPledge)
+            .HasValue<Dues>(ObligationType.Dues)
+            .IsComplete();
 
         builder.Property(x => x.Type).HasConversion<int>();
         builder.Property(x => x.Status).HasConversion<int>();
         builder.Property(x => x.Title).HasMaxLength(200).IsRequired();
         builder.Property(x => x.TotalAmount).HasPrecision(18, 2);
 
-        // Configure relationship to Member
+        // Configure a relationship to Member
         builder.HasOne(x => x.Member)
             .WithMany(x => x.FinancialObligations)
             .HasForeignKey(x => x.MemberId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Configure relationship to Payments (Donations)
+        // Configure a relationship to Payments (Donations)
         builder.HasMany(x => x.Payments)
             .WithOne(x => x.Obligation)
             .HasForeignKey(x => x.ObligationId)

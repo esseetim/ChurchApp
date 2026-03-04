@@ -1,6 +1,7 @@
 using ChurchApp.Application.Domain.Common;
 using ChurchApp.Application.Domain.Members;
 using ChurchApp.Application.Domain.Obligations;
+using ChurchApp.Primitives.Donations;
 
 namespace ChurchApp.Application.Domain.Donations;
 
@@ -19,7 +20,7 @@ public class Donation : IHasDomainEvents
     public DonationType Type { get; set; }
     public DonationMethod Method { get; set; }
     public DateOnly DonationDate { get; set; }
-    public decimal Amount { get; set; }
+    public DonationAmount Amount { get; set; }
     public DonationStatus Status { get; set; }
     public string? IdempotencyKey { get; set; }
     public string? ServiceName { get; set; }
@@ -41,7 +42,7 @@ public class Donation : IHasDomainEvents
         DonationType type,
         DonationMethod method,
         DateOnly donationDate,
-        decimal amount,
+        DonationAmount amount,
         string? idempotencyKey,
         string? enteredBy,
         string? serviceName,

@@ -1,4 +1,3 @@
-using ChurchApp.Application.Domain.Donations;
 
 namespace ChurchApp.Application.Features.Transactions.Classification;
 

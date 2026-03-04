@@ -1,4 +1,4 @@
-using ChurchApp.Application.Domain.Donations;
+using System.Diagnostics.CodeAnalysis;
 using ChurchApp.Application.Domain.Members;
 
 namespace ChurchApp.Application.Domain.Obligations;
@@ -6,13 +6,37 @@ namespace ChurchApp.Application.Domain.Obligations;
 /// <summary>
 /// Represents a financial commitment made by a member (pledge or due).
 /// </summary>
-public sealed class FinancialObligation
+public abstract class FinancialObligation
 {
-    public Guid Id { get; set; }
-    public Guid MemberId { get; set; }
-    public Member Member { get; set; } = null!;
+    private protected FinancialObligation()
+    {
+    }
 
-    public ObligationType Type { get; set; }
+    [SetsRequiredMembers]
+    protected FinancialObligation(
+        Guid memberId, 
+        ObligationType type, 
+        string title, 
+        decimal totalAmount, 
+        DateOnly startDate, 
+        DateOnly dueDate, 
+        ObligationStatus status)
+    {
+        Id = Guid.CreateVersion7();
+        MemberId = memberId;
+        Type = type;
+        Title = title;
+        TotalAmount = totalAmount;
+        StartDate = startDate;
+        DueDate = dueDate;
+        Status = status;
+    }
+
+    public Guid Id { get; init; }
+    public Guid MemberId { get; private set; }
+    public Member Member { get; private set; } = null!;
+
+    public ObligationType Type { get; private set; }
     
     /// <summary>
     /// The descriptive title for this obligation (e.g., "2026 Men's Club Dues", "New Roof Campaign").
@@ -70,16 +94,11 @@ public sealed class FinancialObligation
             throw new ArgumentException("Due date cannot be before start date.", nameof(dueDate));
         }
 
-        return new FinancialObligation
+        return type switch
         {
-            Id = Guid.NewGuid(),
-            MemberId = memberId,
-            Type = type,
-            Title = title.Trim(),
-            TotalAmount = totalAmount,
-            StartDate = startDate,
-            DueDate = dueDate,
-            Status = ObligationStatus.Active
+            ObligationType.FundraisingPledge => new Pledge(memberId, title, totalAmount, startDate, dueDate, ObligationStatus.Active),
+            ObligationType.Dues => new Dues(memberId, title, totalAmount, startDate, dueDate, ObligationStatus.Active),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
 
@@ -130,4 +149,38 @@ public sealed class FinancialObligation
             Status = ObligationStatus.Fulfilled;
         }
     }
+}
+
+public sealed class Pledge : FinancialObligation
+{
+    [SetsRequiredMembers]
+    public Pledge(
+        Guid memberId, 
+        string title, 
+        decimal totalAmount, 
+        DateOnly startDate, 
+        DateOnly dueDate, 
+        ObligationStatus status) : base(memberId, ObligationType.FundraisingPledge, title, totalAmount, startDate, dueDate, status)
+    {
+        
+    }
+    
+    private Pledge() { }
+}
+
+public sealed class Dues : FinancialObligation
+{
+    [SetsRequiredMembers]
+    public Dues(
+        Guid memberId, 
+        string title, 
+        decimal totalAmount, 
+        DateOnly startDate, 
+        DateOnly dueDate, 
+        ObligationStatus status) : base(memberId, ObligationType.Dues, title, totalAmount, startDate, dueDate, status)
+    {
+        
+    }
+    
+    private Dues() { }   
 }

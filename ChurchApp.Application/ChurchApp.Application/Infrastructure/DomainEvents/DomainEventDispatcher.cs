@@ -1,5 +1,4 @@
 using ChurchApp.Application.Domain.Common;
-using ChurchApp.Application.Domain.Donations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ChurchApp.Application.Infrastructure.DomainEvents;

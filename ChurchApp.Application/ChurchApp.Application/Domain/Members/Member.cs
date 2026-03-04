@@ -1,5 +1,3 @@
-using ChurchApp.Application.Domain.Donations;
-using ChurchApp.Application.Domain.Families;
 using ChurchApp.Application.Domain.Obligations;
 
 namespace ChurchApp.Application.Domain.Members;

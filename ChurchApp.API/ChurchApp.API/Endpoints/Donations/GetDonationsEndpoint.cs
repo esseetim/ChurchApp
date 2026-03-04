@@ -1,5 +1,4 @@
 using ChurchApp.API.Endpoints.Contracts;
-using ChurchApp.Application.Domain.Donations;
 using ChurchApp.Application.Infrastructure;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;

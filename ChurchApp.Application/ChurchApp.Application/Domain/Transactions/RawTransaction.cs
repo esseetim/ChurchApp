@@ -1,5 +1,5 @@
 using ChurchApp.Application.Domain.Common;
-using ChurchApp.Application.Domain.Donations;
+using ChurchApp.Primitives.Donations;
 
 namespace ChurchApp.Application.Domain.Transactions;
 
@@ -52,7 +52,7 @@ public class RawTransaction : IHasDomainEvents
     /// <summary>
     /// Transaction amount in USD
     /// </summary>
-    public decimal Amount { get; init; }
+    public DonationAmount Amount { get; init; }
     
     /// <summary>
     /// Transaction date from the provider's email
@@ -109,7 +109,7 @@ public class RawTransaction : IHasDomainEvents
         TransactionProvider provider,
         string senderName,
         string? senderHandle,
-        decimal amount,
+        DonationAmount amount,
         DateOnly transactionDate,
         string? memo,
         string rawContentJson,
@@ -119,7 +119,7 @@ public class RawTransaction : IHasDomainEvents
         ArgumentException.ThrowIfNullOrWhiteSpace(senderName);
         ArgumentException.ThrowIfNullOrWhiteSpace(rawContentJson);
         
-        if (amount <= 0)
+        if (amount == DonationAmount.Zero)
             throw new ArgumentException("Amount must be greater than zero", nameof(amount));
 
         return new RawTransaction

@@ -1,16 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
-using ChurchApp.Application.Domain.Donations;
-using ChurchApp.Application.Domain.Families;
-using ChurchApp.Application.Domain.Members;
 using ChurchApp.Application.Domain.Obligations;
 using ChurchApp.Application.Domain.Reports;
-using ChurchApp.Application.Domain.Transactions;
 using ChurchApp.Application.Infrastructure.Configurations.Donations;
 using ChurchApp.Application.Infrastructure.Configurations.Families;
 using ChurchApp.Application.Infrastructure.Configurations.Members;
 using ChurchApp.Application.Infrastructure.Configurations.Obligations;
 using ChurchApp.Application.Infrastructure.Configurations.Reports;
 using ChurchApp.Application.Infrastructure.Configurations.Transactions;
+using ChurchApp.Application.Infrastructure.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChurchApp.Application.Infrastructure;
@@ -26,6 +23,8 @@ public sealed class ChurchAppDbContext(DbContextOptions<ChurchAppDbContext> opti
     public DbSet<Donation> Donations => Set<Donation>();
     public DbSet<DonationAudit> DonationAudits => Set<DonationAudit>();
     public DbSet<FinancialObligation> FinancialObligations => Set<FinancialObligation>();
+    public DbSet<Pledge> Pledges => Set<Pledge>();
+    public DbSet<Dues> Dues => Set<Dues>();
     
     public DbSet<RawTransaction> RawTransactions => Set<RawTransaction>();
     public DbSet<Report> Reports => Set<Report>();
@@ -45,5 +44,11 @@ public sealed class ChurchAppDbContext(DbContextOptions<ChurchAppDbContext> opti
         modelBuilder.ApplyConfiguration(new SummaryConfiguration());
 
         base.OnModelCreating(modelBuilder);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DonationAmount>().HaveConversion<DonationAmountValueConverter, DonationAmountValueComparer>();
+        base.ConfigureConventions(configurationBuilder);
     }
 }

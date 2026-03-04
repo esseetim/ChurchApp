@@ -8,6 +8,8 @@
     <ItemGroup>
       <Folder Include="Domain\" />
       <Folder Include="Features\" />
-      <Folder Include="Infrastructure\" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\ChurchApp.Primitives\ChurchApp.Primitives\ChurchApp.Primitives.csproj" />
     </ItemGroup>
 </Project>

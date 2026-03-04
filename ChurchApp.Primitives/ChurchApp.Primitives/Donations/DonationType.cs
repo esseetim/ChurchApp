@@ -1,4 +1,4 @@
-namespace ChurchApp.Application.Domain.Donations;
+namespace ChurchApp.Primitives.Donations;
 
 /// <summary>
 /// Represents the type of donation or payment being made.
