@@ -25,11 +25,26 @@ public sealed class CreateMemberEndpoint(ChurchAppDbContext dbContext)
             return;
         }
 
-        var email = string.IsNullOrWhiteSpace(req.Email) ? null : req.Email.Trim();
-        if (email is not null)
+        // Validate and create EmailAddress if provided
+        EmailAddress? emailAddress = null;
+        if (!string.IsNullOrWhiteSpace(req.Email))
         {
-            var exists = await dbContext.Members.AnyAsync(x => x.Email == email, ct);
-            if (exists)
+            var emailResult = EmailAddress.Create(req.Email);
+            if (emailResult.IsError)
+            {
+                AddError($"Invalid email: {emailResult.FirstError.Description}");
+                await SendErrorsAsync(cancellation: ct);
+                return;
+            }
+            
+            emailAddress = emailResult.Value;
+            
+            // Check if email already exists
+            var emailExists = await dbContext.Members.AnyAsync(
+                x => x.Email.HasValue && x.Email == emailAddress, 
+                ct);
+            
+            if (emailExists)
             {
                 AddError("A member with this email already exists.");
                 await SendErrorsAsync(cancellation: ct);
@@ -37,13 +52,28 @@ public sealed class CreateMemberEndpoint(ChurchAppDbContext dbContext)
             }
         }
 
+        // Validate and create PhoneNumber if provided
+        PhoneNumber? phoneNumber = null;
+        if (!string.IsNullOrWhiteSpace(req.PhoneNumber))
+        {
+            var phoneResult = PhoneNumber.Create(req.PhoneNumber);
+            if (phoneResult.IsError)
+            {
+                AddError($"Invalid phone number: {phoneResult.FirstError.Description}");
+                await SendErrorsAsync(cancellation: ct);
+                return;
+            }
+            
+            phoneNumber = phoneResult.Value;
+        }
+
         var member = new Member
         {
             Id = Guid.NewGuid(),
             FirstName = req.FirstName.Trim(),
             LastName = req.LastName.Trim(),
-            Email = email,
-            PhoneNumber = string.IsNullOrWhiteSpace(req.PhoneNumber) ? null : req.PhoneNumber.Trim()
+            Email = emailAddress,
+            PhoneNumber = phoneNumber
         };
 
         var donationAccounts = new List<DonationAccount>();
@@ -65,14 +95,25 @@ public sealed class CreateMemberEndpoint(ChurchAppDbContext dbContext)
                     return;
                 }
 
-                var normalizedHandle = accountRequest.Handle.Trim();
+                // Validate and create PaymentHandle
+                var handleResult = PaymentHandle.Create(accountRequest.Handle, accountRequest.Method);
+                if (handleResult.IsError)
+                {
+                    AddError($"Invalid payment handle: {handleResult.FirstError.Description}");
+                    await SendErrorsAsync(cancellation: ct);
+                    return;
+                }
+
+                var handle = handleResult.Value;
+                
+                // Check if handle already exists for this method
                 var methodHandleExists = await dbContext.DonationAccounts.AnyAsync(
-                    x => x.Method == accountRequest.Method && x.Handle == normalizedHandle,
+                    x => x.Method == accountRequest.Method && x.Handle == handle,
                     ct);
 
                 if (methodHandleExists)
                 {
-                    AddError($"Donation account already exists for method '{accountRequest.Method}' and handle '{normalizedHandle}'.");
+                    AddError($"Donation account already exists for method '{accountRequest.Method}' and handle '{(string)handle}'.");
                     await SendErrorsAsync(cancellation: ct);
                     return;
                 }
@@ -82,7 +123,7 @@ public sealed class CreateMemberEndpoint(ChurchAppDbContext dbContext)
                     Id = Guid.NewGuid(),
                     MemberId = member.Id,
                     Method = accountRequest.Method,
-                    Handle = normalizedHandle,
+                    Handle = handle,
                     DisplayName = string.IsNullOrWhiteSpace(accountRequest.DisplayName) ? null : accountRequest.DisplayName.Trim(),
                     IsActive = true
                 });

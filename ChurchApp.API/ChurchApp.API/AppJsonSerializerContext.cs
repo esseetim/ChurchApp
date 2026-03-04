@@ -1,6 +1,9 @@
 using System.Text.Json.Serialization;
 using ChurchApp.API.Endpoints;
 using ChurchApp.API.Endpoints.Contracts;
+using ChurchApp.Primitives.Donations;
+using ChurchApp.Primitives.Members;
+using ChurchApp.Primitives.Obligations;
 using FastEndpoints;
 
 namespace ChurchApp.API;
@@ -68,4 +71,14 @@ namespace ChurchApp.API;
 [JsonSerializable(typeof(ObligationDto))]
 [JsonSerializable(typeof(ObligationsResponse))]
 [JsonSerializable(typeof(List<ObligationDto>))]
+[JsonSerializable(typeof(EmailAddress))]
+[JsonSerializable(typeof(EmailAddress?))]
+[JsonSerializable(typeof(PhoneNumber))]
+[JsonSerializable(typeof(PhoneNumber?))]
+[JsonSerializable(typeof(PaymentHandle))]
+[JsonSerializable(typeof(DonationType))]
+[JsonSerializable(typeof(DonationMethod))]
+[JsonSerializable(typeof(DonationStatus))]
+[JsonSerializable(typeof(ObligationType))]
+[JsonSerializable(typeof(ObligationStatus))]
 public partial class AppJsonSerializerContext : JsonSerializerContext;

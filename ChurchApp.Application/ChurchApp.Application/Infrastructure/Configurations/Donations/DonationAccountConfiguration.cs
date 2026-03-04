@@ -9,7 +9,16 @@ public class DonationAccountConfiguration : IEntityTypeConfiguration<DonationAcc
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Method).HasConversion<int>();
-        builder.Property(x => x.Handle).HasMaxLength(320).IsRequired();
+        
+        // Value converter for PaymentHandle
+        // Note: Validation uses "Other" method since we don't have method context during deserialization
+        builder.Property(x => x.Handle)
+            .HasConversion(
+                handle => (string)handle,
+                value => PaymentHandle.Create(value, DonationMethod.Other).Value)
+            .HasMaxLength(PaymentHandle.MaxLength)
+            .IsRequired();
+        
         builder.Property(x => x.DisplayName).HasMaxLength(200);
 
         builder.HasOne(x => x.Member)

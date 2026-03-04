@@ -47,14 +47,25 @@ public sealed class CreateMemberDonationAccountEndpoint(ChurchAppDbContext dbCon
             return;
         }
 
-        var normalizedHandle = req.Handle.Trim();
+        // Validate and create PaymentHandle
+        var handleResult = PaymentHandle.Create(req.Handle, req.Method);
+        if (handleResult.IsError)
+        {
+            AddError($"Invalid payment handle: {handleResult.FirstError.Description}");
+            await SendErrorsAsync(cancellation: ct);
+            return;
+        }
+
+        var handle = handleResult.Value;
+        
+        // Check if handle already exists for this method
         var exists = await dbContext.DonationAccounts.AnyAsync(
-            x => x.Method == req.Method && x.Handle == normalizedHandle,
+            x => x.Method == req.Method && x.Handle == handle,
             ct);
 
         if (exists)
         {
-            AddError($"Donation account already exists for method '{req.Method}' and handle '{normalizedHandle}'.");
+            AddError($"Donation account already exists for method '{req.Method}' and handle '{(string)handle}'.");
             await SendErrorsAsync(cancellation: ct);
             return;
         }
@@ -64,7 +75,7 @@ public sealed class CreateMemberDonationAccountEndpoint(ChurchAppDbContext dbCon
             Id = Guid.NewGuid(),
             MemberId = memberId,
             Method = req.Method,
-            Handle = normalizedHandle,
+            Handle = handle,
             DisplayName = string.IsNullOrWhiteSpace(req.DisplayName) ? null : req.DisplayName.Trim(),
             IsActive = true
         };

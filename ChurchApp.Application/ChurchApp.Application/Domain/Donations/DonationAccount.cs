@@ -9,7 +9,7 @@ public class DonationAccount
     public Member Member { get; set; } = null!;
 
     public DonationMethod Method { get; set; }
-    public required string Handle { get; set; }
+    public required PaymentHandle Handle { get; set; }
     public string? DisplayName { get; set; }
     public bool IsActive { get; set; } = true;
 

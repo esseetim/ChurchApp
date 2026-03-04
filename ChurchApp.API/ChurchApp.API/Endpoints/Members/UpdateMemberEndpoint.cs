@@ -39,11 +39,26 @@ public sealed class UpdateMemberEndpoint(ChurchAppDbContext dbContext)
             return;
         }
 
-        var email = string.IsNullOrWhiteSpace(req.Email) ? null : req.Email.Trim();
-        if (email is not null)
+        // Validate and create EmailAddress if provided
+        EmailAddress? emailAddress = null;
+        if (!string.IsNullOrWhiteSpace(req.Email))
         {
-            var exists = await dbContext.Members.AnyAsync(x => x.Id != memberId && x.Email == email, ct);
-            if (exists)
+            var emailResult = EmailAddress.Create(req.Email);
+            if (emailResult.IsError)
+            {
+                AddError($"Invalid email: {emailResult.FirstError.Description}");
+                await SendErrorsAsync(cancellation: ct);
+                return;
+            }
+            
+            emailAddress = emailResult.Value;
+            
+            // Check if email already exists for another member
+            var emailExists = await dbContext.Members.AnyAsync(
+                x => x.Id != memberId && x.Email.HasValue && x.Email == emailAddress, 
+                ct);
+            
+            if (emailExists)
             {
                 AddError("A member with this email already exists.");
                 await SendErrorsAsync(cancellation: ct);
@@ -51,10 +66,25 @@ public sealed class UpdateMemberEndpoint(ChurchAppDbContext dbContext)
             }
         }
 
+        // Validate and create PhoneNumber if provided
+        PhoneNumber? phoneNumber = null;
+        if (!string.IsNullOrWhiteSpace(req.PhoneNumber))
+        {
+            var phoneResult = PhoneNumber.Create(req.PhoneNumber);
+            if (phoneResult.IsError)
+            {
+                AddError($"Invalid phone number: {phoneResult.FirstError.Description}");
+                await SendErrorsAsync(cancellation: ct);
+                return;
+            }
+            
+            phoneNumber = phoneResult.Value;
+        }
+
         member.FirstName = req.FirstName.Trim();
         member.LastName = req.LastName.Trim();
-        member.Email = email;
-        member.PhoneNumber = string.IsNullOrWhiteSpace(req.PhoneNumber) ? null : req.PhoneNumber.Trim();
+        member.Email = emailAddress;
+        member.PhoneNumber = phoneNumber;
         await dbContext.SaveChangesAsync(ct);
         await SendNoContentAsync(ct);
     }

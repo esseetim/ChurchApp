@@ -1,5 +1,6 @@
 // Global usings for ChurchApp.Tests
 global using ChurchApp.Primitives.Donations;
+global using ChurchApp.Primitives.Members;
 global using ChurchApp.Primitives.Obligations;
 global using ChurchApp.Primitives.Transactions;
 global using ChurchApp.Application.Domain.Donations;

@@ -42,19 +42,30 @@ public sealed class UpdateMemberDonationAccountEndpoint(ChurchAppDbContext dbCon
             return;
         }
 
-        var normalizedHandle = req.Handle.Trim();
-        var exists = await dbContext.DonationAccounts.AnyAsync(
-            x => x.Id != accountId && x.Method == account.Method && x.Handle == normalizedHandle,
-            ct);
-
-        if (exists)
+        // Validate and create PaymentHandle
+        var handleResult = PaymentHandle.Create(req.Handle, account.Method);
+        if (handleResult.IsError)
         {
-            AddError($"Donation account already exists for method '{account.Method}' and handle '{normalizedHandle}'.");
+            AddError($"Invalid payment handle: {handleResult.FirstError.Description}");
             await SendErrorsAsync(cancellation: ct);
             return;
         }
 
-        account.Handle = normalizedHandle;
+        var handle = handleResult.Value;
+        
+        // Check if handle already exists for this method (excluding current account)
+        var exists = await dbContext.DonationAccounts.AnyAsync(
+            x => x.Id != accountId && x.Method == account.Method && x.Handle == handle,
+            ct);
+
+        if (exists)
+        {
+            AddError($"Donation account already exists for method '{account.Method}' and handle '{(string)handle}'.");
+            await SendErrorsAsync(cancellation: ct);
+            return;
+        }
+
+        account.Handle = handle;
         account.DisplayName = string.IsNullOrWhiteSpace(req.DisplayName) ? null : req.DisplayName.Trim();
         account.IsActive = req.IsActive;
         await dbContext.SaveChangesAsync(ct);

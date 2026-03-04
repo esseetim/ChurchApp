@@ -3,6 +3,7 @@ using System;
 using ChurchApp.Application.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChurchApp.Application.Infrastructure.Migrations
 {
     [DbContext(typeof(ChurchAppDbContext))]
-    partial class ChurchAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304044726_AddValueObjectPrimitives")]
+    partial class AddValueObjectPrimitives
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
