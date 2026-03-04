@@ -3,7 +3,7 @@ namespace ChurchApp.Primitives.Obligations;
 /// <summary>
 /// Represents the type of financial obligation committed by a member.
 /// </summary>
-public enum ObligationType
+public enum ObligationType : byte
 {
     /// <summary>
     /// A pledge made during a fundraising campaign.

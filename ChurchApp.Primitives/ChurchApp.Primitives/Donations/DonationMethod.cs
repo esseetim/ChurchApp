@@ -1,9 +1,11 @@
+using System.Collections.Frozen;
+
 namespace ChurchApp.Primitives.Donations;
 
 /// <summary>
 /// Represents the payment method used for a donation.
 /// </summary>
-public enum DonationMethod
+public enum DonationMethod : byte
 {
     /// <summary>
     /// Cash payment.
@@ -31,7 +33,18 @@ public enum DonationMethod
     Card = 5,
 
     /// <summary>
-    /// Other payment method.
+    /// Another payment method.
     /// </summary>
     Other = 6
+}
+
+public static class DonationMethodExtensions
+{
+    public static readonly FrozenSet<DonationMethod> AllMethods = [
+        DonationMethod.Cash, DonationMethod.CashApp, DonationMethod.Zelle, DonationMethod.Check, DonationMethod.Card, 
+        DonationMethod.Other];
+    
+    public static readonly FrozenSet<string> AllMethodNames = [
+        nameof(DonationMethod.Cash), nameof(DonationMethod.CashApp), nameof(DonationMethod.Zelle), 
+        nameof(DonationMethod.Check), nameof(DonationMethod.Card), nameof(DonationMethod.Other)];
 }

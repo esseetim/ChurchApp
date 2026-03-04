@@ -3,7 +3,7 @@ namespace ChurchApp.Primitives.Donations;
 /// <summary>
 /// Represents the status of a donation record.
 /// </summary>
-public enum DonationStatus
+public enum DonationStatus : byte
 {
     /// <summary>
     /// Sentinel value for EF Core. Should not be used in business logic.

@@ -3,7 +3,7 @@ namespace ChurchApp.Primitives.Donations;
 /// <summary>
 /// Represents the type of donation or payment being made.
 /// </summary>
-public enum DonationType
+public enum DonationType : byte
 {
     /// <summary>
     /// A general offering donation.

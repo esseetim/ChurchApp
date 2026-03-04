@@ -3,7 +3,7 @@ namespace ChurchApp.Primitives.Obligations;
 /// <summary>
 /// Represents the current status of a financial obligation.
 /// </summary>
-public enum ObligationStatus
+public enum ObligationStatus : byte
 {
     /// <summary>
     /// The obligation is active and awaiting payment.

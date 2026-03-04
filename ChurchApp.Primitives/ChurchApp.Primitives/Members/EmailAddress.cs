@@ -33,6 +33,39 @@ public readonly partial struct EmailAddress : IEquatable<EmailAddress>
     public const int MaxLength = 254;
     
     private EmailAddress(string value) => _value = value;
+
+    /// <summary>
+    /// Creates a validated EmailAddress instance.
+    /// Applies normalization (trim, lowercase) and validates format.
+    /// </summary>
+    /// <param name="emailSpan">The email address to validate</param>
+    /// <returns>ErrorOr containing either the validated EmailAddress or validation errors</returns>
+    public static ErrorOr<EmailAddress> Create(ReadOnlySpan<char> emailSpan)
+    {
+        if (emailSpan.Length == 0)
+            return Error.Validation(
+                code: "EmailAddress.Empty", 
+                description: "Email address cannot be empty");
+        
+        // Normalization: Always store lowercase and trimmed
+        emailSpan = emailSpan.Trim();
+        Span<char> result = stackalloc char[emailSpan.Length];
+        emailSpan.ToLowerInvariant(result);
+        
+        // Validation Step 2: Check length
+        if (result.Length > MaxLength)
+            return Error.Validation(
+                code: "EmailAddress.TooLong", 
+                description: $"Email address cannot exceed {MaxLength} characters");
+        
+        // Validation Step 3: Format validation using regex
+        if (!EmailRegex().IsMatch(result))
+            return Error.Validation(
+                code: "EmailAddress.InvalidFormat", 
+                description: "Email address format is invalid");
+        
+        return new EmailAddress(result.ToString());
+    }
     
     /// <summary>
     /// Creates a validated EmailAddress instance.
@@ -40,32 +73,8 @@ public readonly partial struct EmailAddress : IEquatable<EmailAddress>
     /// </summary>
     /// <param name="email">The email address to validate</param>
     /// <returns>ErrorOr containing either the validated EmailAddress or validation errors</returns>
-    public static ErrorOr<EmailAddress> Create(string? email)
-    {
-        // Validation Step 1: Check for null/whitespace
-        if (string.IsNullOrWhiteSpace(email))
-            return Error.Validation(
-                code: "EmailAddress.Empty", 
-                description: "Email address cannot be empty");
-        
-        // Normalization: Always store lowercase and trimmed
-        email = email.Trim().ToLowerInvariant();
-        
-        // Validation Step 2: Check length
-        if (email.Length > MaxLength)
-            return Error.Validation(
-                code: "EmailAddress.TooLong", 
-                description: $"Email address cannot exceed {MaxLength} characters");
-        
-        // Validation Step 3: Format validation using regex
-        if (!EmailRegex().IsMatch(email))
-            return Error.Validation(
-                code: "EmailAddress.InvalidFormat", 
-                description: "Email address format is invalid");
-        
-        return new EmailAddress(email);
-    }
-    
+    public static ErrorOr<EmailAddress> Create(string? email) => Create(email ?? ReadOnlySpan<char>.Empty);
+
     /// <summary>
     /// Email validation regex (basic but robust for most use cases).
     /// Compiled for performance.
@@ -121,23 +130,25 @@ public sealed class EmailAddressConverter : TypeConverter
     
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
-        if (value is string stringValue)
+        switch (value)
         {
-            if (string.IsNullOrWhiteSpace(stringValue))
+            case string stringValue when string.IsNullOrWhiteSpace(stringValue):
                 return null;
-            
-            var result = EmailAddress.Create(stringValue);
-            
-            if (result.IsError)
+            case string stringValue:
             {
-                throw new NotSupportedException(
-                    $"Cannot convert '{stringValue}' to {nameof(EmailAddress)}: {result.FirstError.Description}");
-            }
+                var result = EmailAddress.Create(stringValue);
             
-            return result.Value;
+                if (result.IsError)
+                {
+                    throw new NotSupportedException(
+                        $"Cannot convert '{stringValue}' to {nameof(EmailAddress)}: {result.FirstError.Description}");
+                }
+            
+                return result.Value;
+            }
+            default:
+                return base.ConvertFrom(context, culture, value);
         }
-        
-        return base.ConvertFrom(context, culture, value);
     }
     
     public override bool CanConvertTo(ITypeDescriptorContext? context, [NotNullWhen(true)] Type? destinationType) =>

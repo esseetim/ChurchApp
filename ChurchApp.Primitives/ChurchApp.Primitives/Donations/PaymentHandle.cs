@@ -93,13 +93,13 @@ public readonly struct PaymentHandle : IEquatable<PaymentHandle>
         var tag = handle[1..];
         
         // Check length (3-20 chars)
-        if (tag.Length < 3 || tag.Length > 20)
+        if (tag.Length is < 3 or > 20)
             return Error.Validation(
                 code: "PaymentHandle.CashApp.InvalidLength", 
                 description: "CashApp tag must be 3-20 characters (excluding $)");
         
         // Check alphanumeric only
-        if (!tag.All(c => char.IsLetterOrDigit(c)))
+        if (!tag.All(char.IsLetterOrDigit))
             return Error.Validation(
                 code: "PaymentHandle.CashApp.InvalidCharacters", 
                 description: "CashApp tag must contain only letters and numbers");
@@ -207,32 +207,31 @@ public sealed class PaymentHandleConverter : TypeConverter
     
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
-        if (value is string stringValue)
+        switch (value)
         {
-            if (string.IsNullOrWhiteSpace(stringValue))
+            case string stringValue when string.IsNullOrWhiteSpace(stringValue):
                 return null;
-            
-            // TypeConverter doesn't have access to DonationMethod context
+            // TypeConverter doesn't have access to DonationMethod context,
             // So we do minimal validation here and rely on domain validation
-            if (stringValue.Length > PaymentHandle.MaxLength)
-            {
+            case string { Length: > PaymentHandle.MaxLength } stringValue:
                 throw new NotSupportedException(
                     $"Cannot convert '{stringValue}' to {nameof(PaymentHandle)}: exceeds maximum length");
-            }
-            
-            // Create with "Other" method for most permissive validation
-            var result = PaymentHandle.Create(stringValue, DonationMethod.Other);
-            
-            if (result.IsError)
+            // Create with "Other" methods for the most permissive validation
+            case string stringValue:
             {
-                throw new NotSupportedException(
-                    $"Cannot convert '{stringValue}' to {nameof(PaymentHandle)}: {result.FirstError.Description}");
-            }
+                var result = PaymentHandle.Create(stringValue, DonationMethod.Other);
             
-            return result.Value;
+                if (result.IsError)
+                {
+                    throw new NotSupportedException(
+                        $"Cannot convert '{stringValue}' to {nameof(PaymentHandle)}: {result.FirstError.Description}");
+                }
+            
+                return result.Value;
+            }
+            default:
+                return base.ConvertFrom(context, culture, value);
         }
-        
-        return base.ConvertFrom(context, culture, value);
     }
     
     public override bool CanConvertTo(ITypeDescriptorContext? context, [NotNullWhen(true)] Type? destinationType) =>
@@ -306,7 +305,7 @@ public sealed class NullablePaymentHandleJsonConverter : JsonConverter<PaymentHa
             return null;
         
         // JSON deserialization doesn't have DonationMethod context
-        // Use "Other" for most permissive validation
+        // Use "Other" for the most permissive validation
         var result = PaymentHandle.Create(value, DonationMethod.Other);
         
         if (result.IsError)

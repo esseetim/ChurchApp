@@ -15,7 +15,7 @@ namespace ChurchApp.Primitives.Members;
 /// Design principles:
 /// - Fail Fast: Invalid phone numbers cannot be constructed
 /// - Normalization: Always stored in E.164 format (+[country code][number])
-/// - Type Safety: Prevents primitive obsession anti-pattern
+/// - Type Safety: Prevents primitive obsession antipattern
 /// - Shared Kernel: Single source of truth for phone validation
 /// 
 /// E.164 format: +[1-3 digit country code][subscriber number]
@@ -75,7 +75,7 @@ public readonly struct PhoneNumber : IEquatable<PhoneNumber>
         
         // Normalization Step 3: Convert to E.164 format
         // If 10 digits, assume US (+1)
-        // Otherwise, assume international format already includes country code
+        // Otherwise, assume an international format already includes country code
         var normalized = digitsOnly.Length == 10 
             ? $"+1{digitsOnly}"
             : $"+{digitsOnly}";
@@ -102,11 +102,12 @@ public readonly struct PhoneNumber : IEquatable<PhoneNumber>
     /// </returns>
     public string ToDisplayFormat()
     {
+        var span = _value.AsSpan();
         // US number: +1XXXXXXXXXX (12 chars)
-        if (_value.Length == 12 && _value.StartsWith("+1", StringComparison.Ordinal))
+        if (span.Length == 12 && span.StartsWith("+1", StringComparison.Ordinal))
         {
             // Format as (XXX) XXX-XXXX
-            return $"({_value.Substring(2, 3)}) {_value.Substring(5, 3)}-{_value.Substring(8, 4)}";
+            return $"({span.Slice(2, 3)}) {span.Slice(5, 3)}-{span.Slice(8, 4)}";
         }
         
         // International: Keep E.164 format
@@ -135,23 +136,25 @@ public sealed class PhoneNumberConverter : TypeConverter
     
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
-        if (value is string stringValue)
+        switch (value)
         {
-            if (string.IsNullOrWhiteSpace(stringValue))
+            case string stringValue when string.IsNullOrWhiteSpace(stringValue):
                 return null;
-            
-            var result = PhoneNumber.Create(stringValue);
-            
-            if (result.IsError)
+            case string stringValue:
             {
-                throw new NotSupportedException(
-                    $"Cannot convert '{stringValue}' to {nameof(PhoneNumber)}: {result.FirstError.Description}");
-            }
+                var result = PhoneNumber.Create(stringValue);
             
-            return result.Value;
+                if (result.IsError)
+                {
+                    throw new NotSupportedException(
+                        $"Cannot convert '{stringValue}' to {nameof(PhoneNumber)}: {result.FirstError.Description}");
+                }
+            
+                return result.Value;
+            }
+            default:
+                return base.ConvertFrom(context, culture, value);
         }
-        
-        return base.ConvertFrom(context, culture, value);
     }
     
     public override bool CanConvertTo(ITypeDescriptorContext? context, [NotNullWhen(true)] Type? destinationType) =>
