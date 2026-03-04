@@ -3,6 +3,7 @@
     <File Path=".gitignore" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
+    <File Path="Directory.Build.targets"/>
     <File Path="README.md" />
     <File Path="nuget.config" />
   </Folder>
@@ -12,11 +13,11 @@
     <File Path="build-api.sh" />
     <File Path="run-api.sh" />
     <File Path="run-apphost.sh" />
+    <File Path="migrate-database.sh"/>
+    <File Path="migrate-database.ps1" />
     <File Path="ensure-ef-compiled-model.sh" />
-    <File Path="ensure-database-migrated.ps1"/>
-    <File Path="ensure-database-migrated.sh"/>
-    <File Path="regenerate-compiled-model.ps1"/>
-    <File Path="regenerate-compiled-model.sh"/>
+    <File Path="regenerate-compiled-model.ps1" />
+    <File Path="regenerate-compiled-model.sh" />
   </Folder>
   <Folder Name="/ChurchApp.Tests/">
     <Project Path="ChurchApp.Tests/ChurchApp.Tests/ChurchApp.Tests.csproj" />

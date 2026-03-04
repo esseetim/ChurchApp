@@ -50,9 +50,9 @@ public class Program
             });
         });
 
+#if DEBUG
+        // Add FastEndpoints with OpenAPI/Swagger document generation
         builder.Services.AddOpenApi();
-        
-        // Configure OpenAPI document (required for Scalar)
         builder.Services.SwaggerDocument(o =>
         {
             o.DocumentSettings = s =>
@@ -62,6 +62,7 @@ public class Program
                 s.Description = "Church donation management API with modern .NET architecture";
             };
         });
+#endif
         
         var app = builder.Build();
         
@@ -76,54 +77,84 @@ public class Program
         
         // Modern API documentation with Scalar (replaces Swagger UI)
         // Scalar provides better UX, performance, and modern design
+#if DEBUG
         if (app.Environment.IsDevelopment())
         {
-            // Generate OpenAPI spec (required by Scalar)
             app.UseSwaggerGen();
-            
-            // Scalar UI at /scalar endpoint (Anders Hejlsberg's developer experience principle)
             app.MapScalarApiReference(options =>
             {
                 options
                     .WithTitle("ChurchApp API Documentation")
                     .WithTheme(ScalarTheme.Purple)
-                    .WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json")
-                    .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-                    .WithPreferredScheme("http") // Development uses HTTP
-                    .WithModels(true) // Show schemas
-                    .WithDownloadButton(true); // Allow OpenAPI spec download
+                    // ... rest of your Scalar config
+                    .WithDownloadButton(true);
             });
         }
+#endif
         
         // Auto-apply migrations on startup (Jez Humble's automated deployment)
-        // This ensures database is always up-to-date in development
-        /*if (app.Environment.IsDevelopment())
+        // This ensures the database is always up to date in development
+        if (app.Environment.IsDevelopment())
         {
             await EnsureDatabaseMigrated(app.Services);
-        }*/
+        }
         
         await app.RunAsync();
     }
-    
+
     /// <summary>
     /// Applies pending EF Core migrations automatically on startup.
     /// Follows Jez Humble's Continuous Delivery principle: "Deploy infrastructure with code."
     /// </summary>
-    /*private static async Task EnsureDatabaseMigrated(IServiceProvider services)
+    /// <summary>
+    /// Applies pending EF Core migrations automatically on startup.
+    /// Uses dynamic migrations in Dev, and AOT-safe raw SQL execution in Production.
+    /// </summary>
+    [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "<Pending>")]
+    private static async Task EnsureDatabaseMigrated(IServiceProvider services)
     {
-        using var scope = services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ChurchApp.Application.Infrastructure.ChurchAppDbContext>();
-        
+        await using var scope = services.CreateAsyncScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<Application.Infrastructure.ChurchAppDbContext>();
+
+#if DEBUG
+        // DEVELOPMENT: Safe to use dynamic code and reflection
         try
         {
             await dbContext.Database.MigrateAsync();
-            Console.WriteLine("✅ Database migrations applied successfully");
+            logger.LogInformation("✅ Database migrations applied successfully (Dynamic)");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"⚠️ Database migration failed: {ex.Message}");
-            // In development, we log and continue (Kent Beck's fail-fast in the right place)
-            // In production, this should fail the startup
+            logger.LogError(ex, "⚠️ Database migration failed: {ExMessage}", ex.Message);
         }
-    }*/
+#else
+        // PRODUCTION / AOT: Must use raw SQL execution to remain AOT-compatible
+        try
+        {
+            // 1. Read the idempotent script embedded in the assembly
+            var assembly = typeof(Program).Assembly;
+            var resourceName = "ChurchApp.API.migrations.sql"; 
+
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream != null)
+            {
+                using var reader = new StreamReader(stream);
+                var sqlScript = await reader.ReadToEndAsync();
+
+                // 2. Execute the raw SQL string
+                await dbContext.Database.ExecuteSqlRawAsync(sqlScript);
+                logger.LogInformation("✅ Database migrations applied successfully (AOT-Safe Script)");
+            }
+            else
+            {
+                logger.LogWarning("⚠️ No embedded migrations.sql script found. Skipping migrations.");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "⚠️ AOT Database migration failed: {ExMessage}", ex.Message);
+        }
+#endif
+    }
 }

@@ -20,9 +20,7 @@ public partial class FamilyFormDialog : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         var response = await MemberService.GetMembersAsync(page: 1, pageSize: 500);
-        Members = response.Members
-            .Select(x => new MemberDisplay(x.Id, $"{x.FirstName} {x.LastName}"))
-            .ToList();
+        Members = [.. response.Members.Select(x => new MemberDisplay(x.Id, $"{x.FirstName} {x.LastName}"))];
     }
 
     private async Task HandleSubmitAsync()

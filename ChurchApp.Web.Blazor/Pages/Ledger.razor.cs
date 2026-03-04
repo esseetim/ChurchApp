@@ -46,7 +46,7 @@ public partial class Ledger : ComponentBase
                 includeVoided: includeVoided
             );
 
-            donations = response.Donations.ToList();
+            donations = [.. response.Donations];
 
             NotificationService.Notify(new NotificationMessage
             {

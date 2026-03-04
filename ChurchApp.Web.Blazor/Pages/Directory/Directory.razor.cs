@@ -28,8 +28,8 @@ public partial class Directory : ComponentBase
         var membersResponse = await MemberService.GetMembersAsync(page: 1, pageSize: 500);
         var familiesResponse = await FamilyService.GetFamiliesAsync(page: 1, pageSize: 500);
 
-        Members = membersResponse.Members.ToList();
-        Families = familiesResponse.Families.ToList();
+        Members = [.. membersResponse.Members];
+        Families = [.. familiesResponse.Families];
 
         MemberAccountCounts.Clear();
         var accountTasks = Members.Select(async member =>

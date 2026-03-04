@@ -17,14 +17,23 @@ namespace ChurchApp.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddChurchAppServices(this IServiceCollection services, IConfiguration configuration)
+    public static void AddChurchAppServices(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("ChurchApp")
             ?? "Host=localhost;Port=5432;Database=churchapp;Username=churchapp;Password=churchapp";
 
         services.AddDbContext<ChurchAppDbContext>(options => 
-            options.UseNpgsql(connectionString)
-                .UseModel(ChurchAppDbContextModel.Instance));
+        {
+            // Your existing connection string setup goes here...
+            options.UseNpgsql(connectionString);
+
+#if !DEBUG
+    // AOT REQUIREMENT: Instruct EF Core to use the pre-compiled models instead of reflection
+    options.UseModel(ChurchApp.Application.Infrastructure.CompiledModels.ChurchAppDbContextModel.Instance);
+#endif
+        });
+        
+        
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<ISummaryUpsertService, SummaryUpsertService>();
@@ -40,7 +49,5 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDonationTypeClassifier, TitheClassifier>();
         services.AddScoped<IDonationTypeClassifier, BuildingFundClassifier>();
         services.AddScoped<DonationTypeClassificationService>();
-
-        return services;
     }
 }

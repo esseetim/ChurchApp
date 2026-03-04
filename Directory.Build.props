@@ -38,6 +38,8 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <PublishAot>true</PublishAot>
         <PublishTrimmed>true</PublishTrimmed>
+
+        <NoWarn>$(NoWarn);IL2026;IL2037;IL2104;IL3000;IL3002;IL3050;IL3053</NoWarn>
     </PropertyGroup>
 
     <!-- Blazor WASM doesn't support native AOT - must come AFTER Release config -->

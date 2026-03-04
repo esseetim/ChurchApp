@@ -25,12 +25,10 @@ public partial class FamilyManagementDialog : ComponentBase
         Model.Name = Family.Name;
 
         var membersResponse = await MemberService.GetMembersAsync(page: 1, pageSize: 500);
-        AllMembers = membersResponse.Members
-            .Select(x => new MemberDisplay(x.Id, $"{x.FirstName} {x.LastName}"))
-            .ToList();
+        AllMembers = [.. membersResponse.Members.Select(x => new MemberDisplay(x.Id, $"{x.FirstName} {x.LastName}"))];
 
         var familyMembers = await FamilyService.GetFamilyMembersAsync(Family.Id);
-        Model.SelectedMemberIds = familyMembers.Members.Select(x => x.MemberId).ToList();
+        Model.SelectedMemberIds = [.. familyMembers.Members.Select(x => x.MemberId)];
     }
 
     private async Task HandleSaveAsync()

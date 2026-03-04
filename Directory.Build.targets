@@ -1,0 +1,26 @@
+<Project>
+
+    <Target Name="Migrate" Condition="'$(MSBuildProjectName)' == 'ChurchApp.API'">
+        <Message Importance="High" Text="🔨 Running Database Migrations..." />
+
+        <PropertyGroup>
+            <MigrateArgs Condition="'$(MigrationName)' != ''">-MigrationName "$(MigrationName)"</MigrateArgs>
+            <MigrateArgs Condition="'$(MigrationName)' == ''" />
+        </PropertyGroup>
+
+        <Exec Command="pwsh -File &quot;$(MSBuildThisFileDirectory)migrate-database.ps1&quot; $(MigrateArgs)"
+              WorkingDirectory="$(MSBuildThisFileDirectory)"
+              Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+
+        <Exec Command="bash &quot;$(MSBuildThisFileDirectory)migrate-database.sh&quot; $(MigrateArgs)"
+              WorkingDirectory="$(MSBuildThisFileDirectory)"
+              Condition="$([MSBuild]::IsOSPlatform('Linux')) Or $([MSBuild]::IsOSPlatform('OSX'))" />
+    </Target>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release' And '$(MSBuildProjectName)' == 'ChurchApp.API'">
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    </PropertyGroup>
+
+</Project>

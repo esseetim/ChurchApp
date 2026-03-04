@@ -59,11 +59,9 @@ public partial class DonationDesk : ComponentBase
             var memberResponse = await membersTask;
             var familyResponse = await familiesTask;
 
-            _members = memberResponse.Members
-                .Select(m => new MemberDisplay(m.Id, $"{m.FirstName} {m.LastName}"))
-                .ToList();
+            _members = [.. memberResponse.Members.Select(m => new MemberDisplay(m.Id, $"{m.FirstName} {m.LastName}"))];
 
-            _families = familyResponse.Families.ToList();
+            _families = [.. familyResponse.Families];
         }
         catch (Exception ex)
         {
@@ -137,13 +135,12 @@ public partial class DonationDesk : ComponentBase
         try
         {
             var response = await MemberService.GetDonationAccountsAsync(_donationModel.MemberId.Value);
-            _availableDonationAccounts = response.Accounts
+            _availableDonationAccounts = [.. response.Accounts
                 .Where(x => x.Method == _donationModel.Method && x.IsActive)
                 .Select(x => new DonationAccountDisplay(
                     x.Id,
                     x.Method,
-                    string.IsNullOrWhiteSpace(x.DisplayName) ? x.Handle : $"{x.DisplayName} ({x.Handle})"))
-                .ToList();
+                    string.IsNullOrWhiteSpace(x.DisplayName) ? x.Handle : $"{x.DisplayName} ({x.Handle})"))];
 
             if (_availableDonationAccounts.Count == 1)
             {
@@ -181,13 +178,12 @@ public partial class DonationDesk : ComponentBase
                 ? ObligationType.FundraisingPledge
                 : ObligationType.ClubDue;
 
-            _availableObligations = response.Obligations
+            _availableObligations = [.. response.Obligations
                 .Where(x => x.Status == ObligationStatus.Active && x.Type == targetObligationType)
                 .Select(x => new ObligationDisplay(
                     x.Id,
                     x.Title,
-                    $"{x.Title} - ${x.BalanceRemaining:F2} remaining of ${x.TotalAmount:F2}"))
-                .ToList();
+                    $"{x.Title} - ${x.BalanceRemaining:F2} remaining of ${x.TotalAmount:F2}"))];
 
             // Auto-select if only one active obligation
             if (_availableObligations.Count == 1)
